@@ -8,39 +8,41 @@ import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-
+import { ListItemButton } from '@mui/material';
+import Link from './Link'
 export const mainListItems = (
     <div>
-        <ListItem button>
+        <ListItemButton component={Link} href="/dashboard" activeClassName="Mui-selected">
             <ListItemIcon>
                 <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
-        </ListItem>
-        <ListItem button>
+        </ListItemButton>
+        <ListItemButton>
             <ListItemIcon>
                 <ShoppingCartIcon />
             </ListItemIcon>
-            <ListItemText primary="Orders" />
-        </ListItem>
-        <ListItem button>
+            <ListItemText primary="订单管理" />
+        </ListItemButton>
+        <ListItemButton component={Link} href="/product" activeClassName="Mui-selected">
+            <ListItemIcon>
+                <LayersIcon />
+            </ListItemIcon>
+            <ListItemText primary="商品管理" />
+        </ListItemButton>
+        <ListItemButton>
             <ListItemIcon>
                 <PeopleIcon />
             </ListItemIcon>
-            <ListItemText primary="Customers" />
-        </ListItem>
-        <ListItem button>
+            <ListItemText primary="用户管理" />
+        </ListItemButton>
+        <ListItemButton>
             <ListItemIcon>
                 <BarChartIcon />
             </ListItemIcon>
             <ListItemText primary="Reports" />
-        </ListItem>
-        <ListItem button>
-            <ListItemIcon>
-                <LayersIcon />
-            </ListItemIcon>
-            <ListItemText primary="Integrations" />
-        </ListItem>
+        </ListItemButton>
+
     </div>
 );
 

@@ -15,25 +15,10 @@ import { useMediaQuery } from '@mui/material';
 
 const drawerWidth = 240;
 
-const Main = styled('main', { shouldForwardProp: (prop) => !["open", "matches"].includes(prop) })(
-    ({ theme, open, matches }) => ({
+const Main = styled('main')(
+    ({ theme, }) => ({
         flexGrow: 1,
         padding: theme.spacing(3),
-        ...(matches && {
-            transition: theme.transitions.create('margin', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
-            marginLeft: `-${drawerWidth}px`,
-            ...(open && {
-                transition: theme.transitions.create('margin', {
-                    easing: theme.transitions.easing.easeOut,
-                    duration: theme.transitions.duration.enteringScreen,
-                }),
-                marginLeft: 0,
-            }),
-        }),
-
     }),
 );
 
@@ -82,14 +67,14 @@ export default function Layout({ children, title }) {
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <AppBar position="fixed" open={open && matches}>
+            <AppBar position="fixed" open={matches}>
                 <Toolbar>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
                         edge="start"
-                        sx={{ mr: 2, ...(open && { display: 'none' }) }}
+                        sx={{ mr: 2, ...(matches && { display: 'none' }) }}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -107,23 +92,20 @@ export default function Layout({ children, title }) {
                         boxSizing: 'border-box',
                     },
                 }}
-                variant={matches ? 'persistent' : 'temporary'}
+                variant={matches ? 'permanent' : 'temporary'}
                 anchor="left"
                 open={open}
                 onClose={handleDrawerClose}
             >
                 <DrawerHeader>
                     <Image src="/logo.svg" height={40} width={40} />
-                    <IconButton onClick={handleDrawerClose}>
-                        <ChevronLeftIcon />
-                    </IconButton>
                 </DrawerHeader>
                 <Divider />
                 {mainListItems}
                 <Divider />
                 {secondaryListItems}
             </Drawer>
-            <Main open={open} matches={matches}>
+            <Main>
                 <DrawerHeader />
                 {children}
             </Main>
