@@ -1,6 +1,6 @@
 import { AppBar, Box, Button, Container, IconButton, MenuItem, Paper, Stack, TextField, Toolbar } from '@mui/material';
-import PageLayout from '../../src/PageLayout';
-import ImageUpload from '../../src/ImageUpload'
+import PageLayout from '../../src/layouts/PageLayout';
+import ImageUpload from '../../src/components/ImageUpload'
 import AddIcon from '@mui/icons-material/Add';
 import React from 'react';
 

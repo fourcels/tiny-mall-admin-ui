@@ -1,11 +1,11 @@
 import { Button, Card, Chip, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from '@mui/material';
 import React from 'react';
 import Image from 'next/image'
-import Layout from '../../src/Layout';
+import Layout from '../../src/layouts/Layout';
 import AddIcon from '@mui/icons-material/Add';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
-import Link from '../../src/Link'
+import Link from '../../src/components/Link'
 
 function createData(name, sku, price, stock, category, status) {
     return { name, sku, price, stock, category, status };

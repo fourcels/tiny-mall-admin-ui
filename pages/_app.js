@@ -5,7 +5,7 @@ import { CacheProvider } from '@emotion/react';
 import createEmotionCache from '../src/createEmotionCache';
 import { ThemeProvider } from '@mui/material';
 import theme from '../src/theme';
-import NextNProgress from '../src/NextNProgress';
+import NextNProgress from '../src/components/NextNProgress';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();

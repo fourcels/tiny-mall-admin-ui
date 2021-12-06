@@ -11,7 +11,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import { ListItemButton } from '@mui/material';
 import GridViewIcon from '@mui/icons-material/GridView';
 
-import Link from './Link'
+import Link from './components/Link'
 
 function NavItem({ href, icon, title }) {
     return (
