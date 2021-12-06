@@ -7,9 +7,8 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import React, { useEffect } from 'react';
-import { mainListItems, secondaryListItems } from './listItems';
+import { mainListItems } from './listItems';
 import Image from 'next/image'
 import { useMediaQuery } from '@mui/material';
 
@@ -102,8 +101,6 @@ export default function Layout({ children, title }) {
                 </DrawerHeader>
                 <Divider />
                 {mainListItems}
-                <Divider />
-                {secondaryListItems}
             </Drawer>
             <Main>
                 <DrawerHeader />

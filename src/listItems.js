@@ -9,40 +9,34 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { ListItemButton } from '@mui/material';
+import GridViewIcon from '@mui/icons-material/GridView';
+
 import Link from './Link'
+
+function NavItem({ href, icon, title }) {
+    return (
+        <ListItemButton component={Link} href={href} activeClassName="Mui-selected">
+            <ListItemIcon>
+                {icon}
+            </ListItemIcon>
+            <ListItemText primary={title} />
+        </ListItemButton>
+    )
+}
+
+const items = [
+    { href: '/dashboard', title: '概要面板', icon: <DashboardIcon /> },
+    { href: '/order', title: '订单管理', icon: <ShoppingCartIcon /> },
+    { href: '/product', title: '商品管理', icon: <LayersIcon /> },
+    { href: '/category', title: '分类管理', icon: <GridViewIcon /> },
+    { href: '/user', title: '用户管理', icon: <PeopleIcon /> },
+]
+
 export const mainListItems = (
     <div>
-        <ListItemButton component={Link} href="/dashboard" activeClassName="Mui-selected">
-            <ListItemIcon>
-                <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" />
-        </ListItemButton>
-        <ListItemButton>
-            <ListItemIcon>
-                <ShoppingCartIcon />
-            </ListItemIcon>
-            <ListItemText primary="订单管理" />
-        </ListItemButton>
-        <ListItemButton component={Link} href="/product" activeClassName="Mui-selected">
-            <ListItemIcon>
-                <LayersIcon />
-            </ListItemIcon>
-            <ListItemText primary="商品管理" />
-        </ListItemButton>
-        <ListItemButton>
-            <ListItemIcon>
-                <PeopleIcon />
-            </ListItemIcon>
-            <ListItemText primary="用户管理" />
-        </ListItemButton>
-        <ListItemButton>
-            <ListItemIcon>
-                <BarChartIcon />
-            </ListItemIcon>
-            <ListItemText primary="Reports" />
-        </ListItemButton>
-
+        {items.map((item, i) => (
+            <NavItem {...item} key={i} />
+        ))}
     </div>
 );
 
