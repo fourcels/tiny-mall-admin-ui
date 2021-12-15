@@ -24,7 +24,7 @@ function UploadButton({ width, height, multiple }) {
                 cursor: 'pointer',
             })}>
                 <AddPhotoAlternateOutlinedIcon />
-                <Typography sx={{ mt: 1 }}>添加图片</Typography>
+                {width >= 100 && <Typography sx={{ mt: 1 }}>添加图片</Typography>}
             </Box>
         </label>
     )
@@ -39,11 +39,8 @@ export default function ImageUpload(props) {
         ...rest
     } = props
     return (
-        <Box {...rest}>
-            <Typography color="text.secondary">商品图片默认显示第一张图，最多可添加10张（长按拖拽图片，可以调整顺序）</Typography>
-            <Stack mt={1} direction="row">
-                <UploadButton width={width} height={height} multiple={multiple} />
-            </Stack>
+        <Box display="inline-block" {...rest}>
+            <UploadButton width={width} height={height} multiple={multiple} />
         </Box>
     )
 }

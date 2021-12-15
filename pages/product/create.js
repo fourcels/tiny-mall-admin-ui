@@ -1,41 +1,61 @@
-import { AppBar, Box, Button, Container, IconButton, MenuItem, Paper, Stack, TextField, Toolbar } from '@mui/material';
+import { AppBar, Box, Button, Container, FormControlLabel, IconButton, MenuItem, Paper, Stack, Switch, TextField, Toolbar, Typography } from '@mui/material';
 import PageLayout from '../../src/layouts/PageLayout';
 import ImageUpload from '../../src/components/ImageUpload'
-import AddIcon from '@mui/icons-material/Add';
 import React from 'react';
+import ProductSkuEditor from '../../src/components/ProductSkuEditor'
 
+function ProductLabel(props) {
+    const {
+        title,
+        children,
+        ...rest
+    } = props
+    return (
+        <Stack direction="row" gap={2} alignItems="center"  {...rest}>
+            <Typography>{title}</Typography>
+            {children}
+        </Stack>
+    )
+}
 
 export default function ProductCreate() {
-    const isMulti = React.useState(false)
+    const [isMulti, setIsMulti] = React.useState(false)
+    const toggleMulti = (event) => {
+        setIsMulti(event.target.checked);
+    };
     return (
         <PageLayout title="添加新商品">
-            <Paper sx={{ p: 3 }}>
-                <Stack
-                    direction="row"
-                    gap={2}
-                    sx={{
-                        '& .MuiTextField-root': { minWidth: 200 },
-                    }}>
-                    <TextField required label="商品名称" />
-                    <TextField select label="商品分类">
-                        <MenuItem value="">
-                            <em>无</em>
-                        </MenuItem>
-                        <MenuItem value={1}>水果</MenuItem>
-                        <MenuItem value={2}>蔬菜</MenuItem>
-                        <MenuItem value={3}>蛋糕</MenuItem>
-                    </TextField>
-                </Stack>
-                <TextField margin="normal" fullWidth label="商品简介" multiline rows={4} />
+            <Stack
+                direction="row"
+                gap={2}
+                sx={{
+                    '& .MuiTextField-root': { minWidth: 200 },
+                }}>
+                <TextField required label="商品名称" />
+                <TextField defaultValue="" select label="商品分类">
+                    <MenuItem value="">
+                        <em>无</em>
+                    </MenuItem>
+                    <MenuItem value={1}>水果</MenuItem>
+                    <MenuItem value={2}>蔬菜</MenuItem>
+                    <MenuItem value={3}>蛋糕</MenuItem>
+                </TextField>
+            </Stack>
+            <TextField margin="normal" fullWidth label="商品简介" multiline rows={4} />
+            <Box mt={2}>
+                <ProductLabel title="商品图片:">
+                    <Typography color="text.secondary">
+                        默认显示第一张图，最多可添加10张（长按拖拽图片，可以调整顺序）
+                    </Typography>
+                </ProductLabel>
                 <ImageUpload mt={2} multiple />
-                <Stack mt={3} direction="row" alignItems="center" flexWrap="wrap" gap={2}>
-                    <TextField required label="规格" />
-                    <TextField required type="number" label="库存" />
-                    <TextField required type="number" label="价格" />
-                    <TextField label="商品编码" />
-                    <Button startIcon={<AddIcon />}>添加多规格</Button>
-                </Stack>
-            </Paper>
+            </Box>
+            <Box mt={2}>
+                <ProductLabel title="商品规格:">
+                    <FormControlLabel control={<Switch checked={isMulti} onChange={toggleMulti} />} label={<Typography color="text.secondary">启用多规格</Typography>} />
+                </ProductLabel>
+                <ProductSkuEditor mt={2} isMulti={isMulti} />
+            </Box>
             <Toolbar />
             <AppBar
                 position="fixed"

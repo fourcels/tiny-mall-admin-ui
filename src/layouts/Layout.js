@@ -41,10 +41,9 @@ const AppBar = styled(MuiAppBar, {
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
-    padding: theme.spacing(0, 1, 0, 2),
+    padding: theme.spacing(0, 2),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
-    justifyContent: 'space-between',
 }));
 
 export default function Layout({ children, title }) {
@@ -98,6 +97,7 @@ export default function Layout({ children, title }) {
             >
                 <DrawerHeader>
                     <Image src="/logo.svg" height={40} width={40} />
+                    <Typography variant='h6' ml={2}>商家后台</Typography>
                 </DrawerHeader>
                 <Divider />
                 {mainListItems}
