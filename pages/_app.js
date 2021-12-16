@@ -6,6 +6,9 @@ import createEmotionCache from '../src/createEmotionCache';
 import { ThemeProvider } from '@mui/material';
 import theme from '../src/theme';
 import NextNProgress from '../src/components/NextNProgress';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import zhLocale from 'date-fns/locale/zh-CN'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -18,12 +21,14 @@ export default function MyApp(props) {
         <title>我的管理后台</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <NextNProgress />
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <LocalizationProvider dateAdapter={AdapterDateFns} locale={zhLocale}>
+        <ThemeProvider theme={theme}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <NextNProgress />
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </LocalizationProvider>
     </CacheProvider>
   );
 }

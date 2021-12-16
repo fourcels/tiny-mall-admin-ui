@@ -58,10 +58,10 @@ function FilterBar(props) {
                     <MenuItem value={0}>已下架</MenuItem>
                 </TextField>
                 <TextField label="商品编码" />
-                <Stack direction="row" gap={2} alignItems="center">
-                    <Button startIcon={<FilterAltIcon />} variant="contained">筛选</Button>
-                    <Button startIcon={<ClearAllIcon />} variant="outlined" color="error">重置</Button>
-                </Stack>
+            </Stack>
+            <Stack mt={2} direction="row" gap={2} alignItems="center">
+                <Button startIcon={<FilterAltIcon />} variant="contained">筛选</Button>
+                <Button startIcon={<ClearAllIcon />} variant="outlined" color="error">重置</Button>
             </Stack>
         </Paper>
     )
