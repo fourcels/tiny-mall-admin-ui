@@ -58,8 +58,8 @@ export default function ProductCreate() {
             <OrderInfo title="收货人信息" sx={{ mt: 2 }}>
                 <Stack gap={2}>
                     <OrderLabel title="收货人">高宏</OrderLabel>
-                    <OrderLabel title="联系电话">15558820917</OrderLabel>
-                    <OrderLabel title="详细地址">浙江省温州市鹿城区DOIT创业园</OrderLabel>
+                    <OrderLabel title="联系电话">155****0917</OrderLabel>
+                    <OrderLabel title="详细地址">浙江省温州市鹿城区</OrderLabel>
                 </Stack>
             </OrderInfo>
             <OrderInfo title="商品信息" sx={{ mt: 2 }}>
