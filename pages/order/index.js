@@ -47,7 +47,6 @@ function DataTable(props) {
                             <TableCell align="center">订单金额(元)</TableCell>
                             <TableCell align="center">收货人信息</TableCell>
                             <TableCell align="center">下单时间</TableCell>
-                            <TableCell align="center">备注</TableCell>
                             <TableCell align="center">订单状态</TableCell>
                             <TableCell align="center">操作</TableCell>
                         </TableRow>
@@ -66,7 +65,6 @@ function DataTable(props) {
                                     <TableCell align="center">{row.amount}</TableCell>
                                     <TableCell align="center">{row.userInfo}</TableCell>
                                     <TableCell align="center">{row.createdAt}</TableCell>
-                                    <TableCell align="center">{row.remarks}</TableCell>
                                     <TableCell align="center">{row.status}</TableCell>
                                     <TableCell align="center">
                                         <Button component={Link} href={`/order/${row.orderNo}`} variant="text">查看详情</Button>
@@ -77,7 +75,6 @@ function DataTable(props) {
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
                 component="div"
                 count={data.length}
                 rowsPerPage={rowsPerPage}
@@ -110,7 +107,7 @@ function FilterBar(props) {
                 <TextField label="订单号" />
                 <TextField label="收货人" />
 
-                <TextField select label="订单状态">
+                <TextField defaultValue="" select label="订单状态">
                     <MenuItem value="">
                         <em>无</em>
                     </MenuItem>
@@ -124,13 +121,14 @@ function FilterBar(props) {
                 <DateRangePicker
                     startText="开始"
                     endText="结束"
+                    mask="____-__-__"
                     inputFormat="yyyy-MM-dd"
                     value={value}
                     onChange={handleChange}
                     renderInput={(startProps, endProps) => (
                         <React.Fragment>
                             <TextField {...startProps} />
-                            <Box sx={{ mx: 2 }}> to </Box>
+                            <Box sx={{ mx: 2 }}> 至 </Box>
                             <TextField {...endProps} />
                         </React.Fragment>
                     )}

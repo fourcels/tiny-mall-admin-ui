@@ -74,7 +74,6 @@ function DataTable(props) {
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
                 component="div"
                 count={data.length}
                 rowsPerPage={rowsPerPage}
