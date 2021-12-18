@@ -45,7 +45,6 @@ function DataTable(props) {
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell>序号</TableCell>
                             <TableCell>名称</TableCell>
                             <TableCell align="center">商品数量</TableCell>
                             <TableCell align="center">排序</TableCell>
@@ -57,9 +56,6 @@ function DataTable(props) {
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row, index) => (
                                 <TableRow hover key={index}>
-                                    <TableCell>
-                                        {index + 1}
-                                    </TableCell>
                                     <TableCell>
                                         {row.name}
                                     </TableCell>
