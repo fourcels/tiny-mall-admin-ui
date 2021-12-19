@@ -6,18 +6,28 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Head from 'next/head';
-import Copyright from '../src/Copyright';
+import Copyright from '../src/components/Copyright';
+import apis from '../src/apis'
+import { useForm, Controller } from "react-hook-form";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { IconButton, InputAdornment } from '@mui/material';
+import React from 'react';
+import { useRouter } from 'next/dist/client/router';
+
 
 export default function SignIn() {
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        // eslint-disable-next-line no-console
-        console.log({
-            email: data.get('username'),
-            password: data.get('password'),
-        });
-    };
+    const [showPassword, setShowPassword] = React.useState(false)
+    const toggleShowPassword = () => setShowPassword(!showPassword)
+
+    const router = useRouter()
+
+    const { handleSubmit, control } = useForm();
+    const onSubmit = async (params) => {
+        const { access_token } = await apis.user.authenticate(params)
+        localStorage.token = access_token
+        router.push('/dashboard')
+    }
 
     return (
         <Container component="main" maxWidth="xs">
@@ -38,27 +48,57 @@ export default function SignIn() {
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="username"
-                        label="用户名"
+                <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
+                    <Controller
+                        defaultValue=""
                         name="username"
-                        autoComplete="username"
-                        autoFocus
+                        control={control}
+                        rules={{ required: '用户名不能为空' }}
+                        render={({ field, fieldState }) => (
+                            <TextField
+                                label="用户名"
+                                margin="normal"
+                                required
+                                fullWidth
+                                autoFocus
+                                {...field}
+                                error={!!fieldState.error}
+                                helperText={fieldState.error?.message}
+                            />
+                        )}
                     />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
+                    <Controller
+                        defaultValue=""
                         name="password"
-                        label="密码"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
+                        control={control}
+                        rules={{ required: '密码不能为空' }}
+                        render={({ field, fieldState }) => (
+                            <TextField
+                                label="密码"
+                                margin="normal"
+                                required
+                                fullWidth
+                                autoFocus
+                                type={showPassword ? 'text' : 'password'}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={toggleShowPassword}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    )
+                                }}
+                                {...field}
+                                error={!!fieldState.error}
+                                helperText={fieldState.error?.message}
+                            />
+                        )}
                     />
+
                     <Button
                         type="submit"
                         fullWidth

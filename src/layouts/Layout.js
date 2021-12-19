@@ -10,7 +10,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import React, { useEffect } from 'react';
 import { mainListItems } from '../listItems';
 import Image from 'next/image'
-import { useMediaQuery } from '@mui/material';
+import { Avatar, Button, Menu, MenuItem, Tooltip, useMediaQuery } from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import useUser from '../hooks/useUser';
+import { useRouter } from 'next/router';
+import { useSWRConfig } from 'swr';
+
 
 const drawerWidth = 240;
 
@@ -47,6 +52,52 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     ...theme.mixins.toolbar,
 }));
 
+function ProfileMenu() {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const { cache } = useSWRConfig()
+
+    const handleMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const router = useRouter()
+    const { user } = useUser();
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token')
+        setAnchorEl(null);
+        cache.clear()
+        router.push('/sign-in')
+    }
+
+    return (
+        <React.Fragment>
+            <IconButton onClick={handleMenu}>
+                <Avatar >{user?.username[0].toUpperCase()}</Avatar>
+            </IconButton>
+            <Menu
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuItem onClick={handleLogout}>退出登录</MenuItem>
+            </Menu>
+        </React.Fragment>
+    )
+}
+
 export default function Layout({ children, title }) {
     const [open, setOpen] = React.useState(true);
     const theme = useTheme();
@@ -80,6 +131,8 @@ export default function Layout({ children, title }) {
                     <Typography variant="h6" noWrap component="div">
                         {title}
                     </Typography>
+                    <Box flex={1} />
+                    <ProfileMenu />
                 </Toolbar>
             </AppBar>
             <Drawer

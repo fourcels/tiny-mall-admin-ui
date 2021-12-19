@@ -9,6 +9,10 @@ import NextNProgress from '../src/components/NextNProgress';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import zhLocale from 'date-fns/locale/zh-CN'
+import '../src/axios'
+import { SnackbarUtilsConfigurator } from '../src/notistack'
+import { SnackbarProvider } from 'notistack';
+
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -26,7 +30,10 @@ export default function MyApp(props) {
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           <NextNProgress />
-          <Component {...pageProps} />
+          <SnackbarProvider maxSnack={3} anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}>
+            <SnackbarUtilsConfigurator />
+            <Component {...pageProps} />
+          </SnackbarProvider>
         </ThemeProvider>
       </LocalizationProvider>
     </CacheProvider>

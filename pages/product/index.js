@@ -42,17 +42,17 @@ function FilterBar(props) {
                 }}
                 direction="row" flexWrap="wrap" gap={2}>
                 <TextField label="商品名称" />
-                <TextField select label="商品分类">
+                <TextField defaultValue="" select label="商品分类">
                     <MenuItem value="">
-                        <em>None</em>
+                        <em>无</em>
                     </MenuItem>
                     <MenuItem value={1}>水果</MenuItem>
                     <MenuItem value={2}>蔬菜</MenuItem>
-                    <MenuItem value={2}>蛋糕</MenuItem>
+                    <MenuItem value={3}>蛋糕</MenuItem>
                 </TextField>
-                <TextField select label="商品状态">
+                <TextField defaultValue="" select label="商品状态">
                     <MenuItem value="">
-                        <em>None</em>
+                        <em>无</em>
                     </MenuItem>
                     <MenuItem value={1}>售卖中</MenuItem>
                     <MenuItem value={0}>已下架</MenuItem>
