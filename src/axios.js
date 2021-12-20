@@ -11,7 +11,7 @@ axios.interceptors.request.use(function (config) {
 });
 
 axios.interceptors.response.use((response) => response, (error) => {
-    if (401 === error.response.status) {
+    if (401 === error.response?.status) {
         Router.push('/sign-in')
     }
     return Promise.reject(error);

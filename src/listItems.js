@@ -8,7 +8,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import { ListItemButton } from '@mui/material';
+import { Box, ListItemButton } from '@mui/material';
 import GridViewIcon from '@mui/icons-material/GridView';
 
 import Link from './components/Link'
@@ -33,11 +33,15 @@ const items = [
 ]
 
 export const mainListItems = (
-    <div>
+    <Box sx={{
+        '& .Mui-selected': {
+            pointerEvents: 'none'
+        }
+    }}>
         {items.map((item, i) => (
             <NavItem {...item} key={i} />
         ))}
-    </div>
+    </Box>
 );
 
 export const secondaryListItems = (

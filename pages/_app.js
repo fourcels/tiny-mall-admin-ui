@@ -12,6 +12,8 @@ import zhLocale from 'date-fns/locale/zh-CN'
 import '../src/axios'
 import { SnackbarUtilsConfigurator } from '../src/notistack'
 import { SnackbarProvider } from 'notistack';
+import { ConfirmProvider } from 'material-ui-confirm';
+
 
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -32,7 +34,15 @@ export default function MyApp(props) {
           <NextNProgress />
           <SnackbarProvider maxSnack={3} anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}>
             <SnackbarUtilsConfigurator />
-            <Component {...pageProps} />
+            <ConfirmProvider
+              defaultOptions={{
+                confirmationText: '确定',
+                cancellationText: '取消',
+                confirmationButtonProps: { autoFocus: true },
+              }}
+            >
+              <Component {...pageProps} />
+            </ConfirmProvider>
           </SnackbarProvider>
         </ThemeProvider>
       </LocalizationProvider>
