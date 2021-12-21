@@ -3,6 +3,9 @@ import PageLayout from '../../src/layouts/PageLayout';
 import ImageUpload from '../../src/components/ImageUpload'
 import React from 'react';
 import ProductSkuEditor from '../../src/components/ProductSkuEditor'
+import { Controller, useForm } from 'react-hook-form';
+import CategorySelect from '../../src/components/CategorySelect';
+
 
 function ProductLabel(props) {
     const {
@@ -20,6 +23,10 @@ function ProductLabel(props) {
 
 export default function ProductCreate() {
     const [isMulti, setIsMulti] = React.useState(false)
+    const { handleSubmit, control } = useForm();
+    const onSubmit = async (params) => {
+        console.log(params);
+    }
     const toggleMulti = (event) => {
         setIsMulti(event.target.checked);
     };
@@ -31,24 +38,47 @@ export default function ProductCreate() {
                 sx={{
                     '& .MuiTextField-root': { minWidth: 200 },
                 }}>
-                <TextField required label="商品名称" />
-                <TextField defaultValue="" select label="商品分类">
-                    <MenuItem value="">
-                        <em>无</em>
-                    </MenuItem>
-                    <MenuItem value={1}>水果</MenuItem>
-                    <MenuItem value={2}>蔬菜</MenuItem>
-                    <MenuItem value={3}>蛋糕</MenuItem>
-                </TextField>
+                <Controller
+                    defaultValue=""
+                    name="name"
+                    control={control}
+                    rules={{ required: '分类名称不能为空' }}
+                    render={({ field, fieldState }) => (
+                        <TextField
+                            label="商品名称"
+                            required
+                            {...field}
+                            error={!!fieldState.error}
+                            helperText={fieldState.error?.message}
+                        />
+                    )}
+                />
+                <CategorySelect control={control} />
             </Stack>
-            <TextField margin="normal" fullWidth label="商品简介" multiline rows={4} />
+            <Controller
+                defaultValue=""
+                name="desc"
+                control={control}
+                render={({ field, fieldState }) => (
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        label="商品简介"
+                        multiline
+                        rows={4}
+                        {...field}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                    />
+                )}
+            />
             <Box mt={2}>
                 <ProductLabel title="商品图片:">
                     <Typography color="text.secondary">
                         默认显示第一张图，最多可添加10张（长按拖拽图片，可以调整顺序）
                     </Typography>
                 </ProductLabel>
-                <ImageUpload mt={2} multiple />
+                <ImageUpload mt={2} multiple max={10} />
             </Box>
             <Box mt={2}>
                 <ProductLabel title="商品规格:">
@@ -66,10 +96,10 @@ export default function ProductCreate() {
                 })}>
                 <Container>
                     <Toolbar disableGutters sx={{ justifyContent: 'right' }}>
-                        <Button size="large" variant="contained">保存商品</Button>
+                        <Button onClick={handleSubmit(onSubmit)} size="large" variant="contained">保存商品</Button>
                     </Toolbar>
                 </Container>
             </AppBar>
-        </PageLayout>
+        </PageLayout >
     )
 }

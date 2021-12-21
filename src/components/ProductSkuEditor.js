@@ -131,7 +131,6 @@ function ProductSkuTable(props) {
     const itemsArr = attrs.map((item) => item.items)
     const dataList = cartesian(itemsArr)
     const rowSpan = getRowSpan(itemsArr)
-    console.log(rowSpan)
     return (
         <TableContainer sx={{ maxHeight: 440, ...sx }} component={Paper} {...rest}>
             <Table stickyHeader>
