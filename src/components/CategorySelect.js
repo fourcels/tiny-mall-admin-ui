@@ -9,8 +9,8 @@ export default function (props) {
     const { list } = useList('/admin/categories/all')
     return (
         <Controller
-            defaultValue=""
-            name="cateogry_id"
+            defaultValue={undefined}
+            name="category_id"
             control={control}
             render={({ field, fieldState }) => (
                 <TextField
@@ -20,7 +20,7 @@ export default function (props) {
                     error={!!fieldState.error}
                     helperText={fieldState.error?.message}
                 >
-                    <MenuItem value="">
+                    <MenuItem value={undefined}>
                         <em>无</em>
                     </MenuItem>
                     {list?.map((item) => (

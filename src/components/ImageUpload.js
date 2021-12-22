@@ -1,11 +1,11 @@
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 import { Stack, Box, Typography, Backdrop, IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Image from 'next/image'
 import React from 'react';
 import apis from '../apis'
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Image from './Image'
 
 const STATIC_BASE_URL = process.env.NEXT_PUBLIC_STATIC_BASE_URL
 
@@ -47,10 +47,6 @@ function UploadButton(props) {
     )
 }
 
-const PreviewImage = styled('img')({
-    maxHeight: '80%',
-    maxWidth: '80%',
-});
 
 function ImageItem(props) {
     const {
@@ -82,7 +78,7 @@ function ImageItem(props) {
                     }
                 })}
             >
-                <Image objectFit="cover" width={width} height={height} src={src} />
+                <Image width={width} height={height} src={src} objectFit="cover" />
                 <Stack
                     direction="row"
                     justifyContent="center"
@@ -127,7 +123,7 @@ function ImageItem(props) {
                 open={open}
                 onClick={handleClose}
             >
-                <PreviewImage src={src} />
+                <Image width="80%" height="80%" src={src} objectFit="contain" />
             </Backdrop>
         </React.Fragment >
     )
@@ -140,9 +136,13 @@ export default function ImageUpload(props) {
         height = 120,
         multiple = false,
         max = 0,
+        onChange,
         ...rest
     } = props
     const [images, setImages] = React.useState([])
+
+    React.useEffect(() => onChange?.(images), [images])
+
     const handleChange = async (e) => {
         let files = [...e.target.files]
         if (multiple && max > 0 && files.length + images.length > max) {

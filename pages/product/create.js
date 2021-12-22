@@ -5,6 +5,7 @@ import React from 'react';
 import ProductSkuEditor from '../../src/components/ProductSkuEditor'
 import { Controller, useForm } from 'react-hook-form';
 import CategorySelect from '../../src/components/CategorySelect';
+import apis from '../../src/apis';
 
 
 function ProductLabel(props) {
@@ -23,9 +24,11 @@ function ProductLabel(props) {
 
 export default function ProductCreate() {
     const [isMulti, setIsMulti] = React.useState(false)
-    const { handleSubmit, control } = useForm();
+    const { handleSubmit, control, setValue } = useForm();
     const onSubmit = async (params) => {
         console.log(params);
+        // const data = await apis.product.create(params)
+        // console.log(data);
     }
     const toggleMulti = (event) => {
         setIsMulti(event.target.checked);
@@ -42,7 +45,7 @@ export default function ProductCreate() {
                     defaultValue=""
                     name="name"
                     control={control}
-                    rules={{ required: '分类名称不能为空' }}
+                    rules={{ required: '商品名称不能为空' }}
                     render={({ field, fieldState }) => (
                         <TextField
                             label="商品名称"
@@ -78,13 +81,25 @@ export default function ProductCreate() {
                         默认显示第一张图，最多可添加10张（长按拖拽图片，可以调整顺序）
                     </Typography>
                 </ProductLabel>
-                <ImageUpload mt={2} multiple max={10} />
+                <Controller
+                    defaultValue=""
+                    name="images"
+                    control={control}
+                    render={({ field }) => (
+                        <ImageUpload
+                            mt={2}
+                            multiple
+                            max={10}
+                            onChange={field.onChange}
+                        />
+                    )}
+                />
             </Box>
             <Box mt={2}>
                 <ProductLabel title="商品规格:">
                     <FormControlLabel control={<Switch checked={isMulti} onChange={toggleMulti} />} label={<Typography color="text.secondary">启用多规格</Typography>} />
                 </ProductLabel>
-                <ProductSkuEditor mt={2} isMulti={isMulti} />
+                <ProductSkuEditor setValue={setValue} control={control} mt={2} isMulti={isMulti} />
             </Box>
             <Toolbar />
             <AppBar

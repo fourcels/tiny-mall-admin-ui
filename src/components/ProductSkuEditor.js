@@ -4,31 +4,113 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ImageUpload from './ImageUpload';
 import ClearIcon from '@mui/icons-material/Clear';
+import { Controller, useFieldArray } from 'react-hook-form';
 
+const DEFAULT_SKU = { name: '', price: '', stock: '', sn: '', image: '' }
 
 function ProdouctSku(props) {
+    const {
+        control
+    } = props
     return (
-        <Stack direction="row" alignItems="center" flexWrap="wrap" gap={2}>
-            <TextField required label="规格" />
-            <TextField required type="number" label="库存" />
-            <TextField required type="number" label="价格" />
-            <TextField label="商品编码" />
+        <Stack direction="row" flexWrap="wrap" gap={2}>
+            <Controller
+                defaultValue=""
+                name="skus.0.name"
+                control={control}
+                rules={{ required: '规格不能为空' }}
+                render={({ field, fieldState }) => (
+                    <TextField
+                        label="规格"
+                        required
+                        {...field}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                    />
+                )}
+            />
+            <Controller
+                defaultValue=""
+                name="skus.0.price"
+                control={control}
+                rules={{
+                    required: '价格不能为空',
+                    min: { value: 0, message: '价格必须大于等于0' },
+                }}
+                render={({ field, fieldState }) => (
+                    <TextField
+                        label="价格"
+                        required
+                        type="number"
+                        inputProps={{ min: 0 }}
+                        {...field}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                    />
+                )}
+            />
+            <Controller
+                defaultValue=""
+                name="skus.0.stock"
+                control={control}
+                rules={{
+                    required: '库存不能为空',
+                    min: { value: 0, message: '价格必须大于等于0' },
+                }}
+                render={({ field, fieldState }) => (
+                    <TextField
+                        label="库存"
+                        required
+                        type="number"
+                        inputProps={{ min: 0 }}
+                        {...field}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                    />
+                )}
+            />
+            <Controller
+                defaultValue=""
+                name="skus.0.sn"
+                control={control}
+                render={({ field, fieldState }) => (
+                    <TextField
+                        label="商品编码"
+                        {...field}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                    />
+                )}
+            />
         </Stack>
     )
 }
 
 function ProductAttrItem(props) {
     const {
+        name,
+        control,
         handleDeleteItem,
         showDeleteButton = false,
         ...rest
     } = props
     return (
         <Stack direction="row" gap={2} alignItems="center" {...rest}>
-            <TextField
-                size="small"
-                required
-                label="规格值"
+            <Controller
+                defaultValue=""
+                name={`${name}.value`}
+                control={control}
+                rules={{ required: '规格值不能为空' }}
+                render={({ field, fieldState }) => (
+                    <TextField
+                        label="规格值"
+                        size="small"
+                        required
+                        {...field}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                    />
+                )}
             />
             <ImageUpload height={48} width={48} />
             {showDeleteButton && <Button onClick={handleDeleteItem} startIcon={<DeleteIcon />} color="error">删除</Button>}
@@ -36,29 +118,48 @@ function ProductAttrItem(props) {
     )
 }
 
-const DEFAULT_ITEM = { name: '', image: '' }
+const DEFAULT_ITEM = { value: '', image: '' }
 function ProductAttr(props) {
     const {
+        control,
+        name,
         handleDelete,
-        showDeleteButton = false
+        showDeleteButton = false,
     } = props
-    const [data, setData] = React.useState([DEFAULT_ITEM])
+    const { fields, append, remove } = useFieldArray({
+        control, // control props comes from useForm (optional: if you are using FormContext)
+        name: `${name}.items`, // unique name for your Field Array,
+    })
     const handleAddItem = () => {
-        setData([...data, DEFAULT_ITEM])
+        append(DEFAULT_ITEM);
     }
     const handleDeleteItem = (i) => {
-        data.splice(i, 1)
-        setData([...data])
+        remove(i)
     }
     return (
         <Stack>
             <Stack gap={2} direction="row" alignItems="center" justifyContent="space-between">
-                <TextField size="small" required label="规格类型" />
+                <Controller
+                    defaultValue=""
+                    name={`${name}.name`}
+                    control={control}
+                    rules={{ required: '规格类型不能为空' }}
+                    render={({ field, fieldState }) => (
+                        <TextField
+                            label="规格类型"
+                            size="small"
+                            required
+                            {...field}
+                            error={!!fieldState.error}
+                            helperText={fieldState.error?.message}
+                        />
+                    )}
+                />
                 {showDeleteButton && <Button color="error" onClick={handleDelete} startIcon={<DeleteIcon />} variant="outlined">删除规格</Button>}
             </Stack>
             <Stack mt={2} gap={2}>
-                {data.map((item, i) => (
-                    <ProductAttrItem showDeleteButton={data.length > 1} handleDeleteItem={() => handleDeleteItem(i)} />
+                {fields.map((item, i) => (
+                    <ProductAttrItem control={control} showDeleteButton={fields.length > 1} key={item.id} name={`${name}.items.${i}`} handleDeleteItem={() => handleDeleteItem(i)} />
                 ))}
                 <Box>
                     <Button onClick={handleAddItem} startIcon={<AddIcon />}>添加规格值</Button>
@@ -69,25 +170,29 @@ function ProductAttr(props) {
     )
 }
 
-const DEFAULT_ATTR = { name: '' }
+const DEFAULT_ATTR = { name: '', items: [DEFAULT_ITEM] }
 function ProductAttrEditor(props) {
     const {
-        toggleMulti,
+        control,
         ...rest
     } = props
-    const [data, setData] = React.useState([DEFAULT_ATTR])
+
+    const { fields, append, remove } = useFieldArray({
+        control, // control props comes from useForm (optional: if you are using FormContext)
+        name: "attrs", // unique name for your Field Array,
+    })
+
     const handleAdd = () => {
-        setData([...data, DEFAULT_ATTR])
+        append(DEFAULT_ATTR);
     }
     const handleDelete = (i) => {
-        data.splice(i, 1)
-        setData([...data])
+        remove(i)
     }
 
     return (
         <Box {...rest}>
-            {data.map((item, i) => (
-                <ProductAttr showDeleteButton={data.length > 1} handleDelete={() => handleDelete(i)} data={item} key={i} />
+            {fields.map((item, i) => (
+                <ProductAttr showDeleteButton={fields.length > 1} control={control} handleDelete={() => handleDelete(i)} data={item} key={item.id} name={`attrs.${i}`} />
             ))}
             <Button onClick={handleAdd} startIcon={<AddIcon />} variant="outlined">添加规格</Button>
         </Box>
@@ -168,22 +273,37 @@ function ProductSkuTable(props) {
 }
 
 function ProductMultiSku(props) {
+    const {
+        control
+    } = props
     return (
         <Box>
-            <ProductAttrEditor />
+            <ProductAttrEditor control={control} />
             <ProductSkuTable sx={{ mt: 2 }} />
         </Box>
     )
 }
 
+
 export default function ProductSkuEditor(props) {
     const {
         isMulti,
+        control,
+        setValue,
         ...rest
     } = props
+    React.useEffect(() => {
+        if (isMulti) {
+            setValue('attrs', [DEFAULT_ATTR])
+            setValue('skus', undefined)
+        } else {
+            setValue('attrs', undefined)
+            setValue('skus', [DEFAULT_SKU])
+        }
+    }, [isMulti])
     return (
         <Box {...rest}>
-            {isMulti ? <ProductMultiSku /> : <ProdouctSku />}
+            {isMulti ? <ProductMultiSku control={control} /> : <ProdouctSku control={control} />}
         </Box>
     )
 }
