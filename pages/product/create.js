@@ -23,12 +23,10 @@ function ProductLabel(props) {
 }
 
 export default function ProductCreate() {
-    const [isMulti, setIsMulti] = React.useState(false)
-    const { handleSubmit, control, setValue } = useForm();
+    const [isMulti, setIsMulti] = React.useState(true)
+    const { handleSubmit, control, setValue, getValues } = useForm();
     const onSubmit = async (params) => {
-        console.log(params);
-        // const data = await apis.product.create(params)
-        // console.log(data);
+        const data = await apis.product.create(params)
     }
     const toggleMulti = (event) => {
         setIsMulti(event.target.checked);
@@ -99,7 +97,7 @@ export default function ProductCreate() {
                 <ProductLabel title="商品规格:">
                     <FormControlLabel control={<Switch checked={isMulti} onChange={toggleMulti} />} label={<Typography color="text.secondary">启用多规格</Typography>} />
                 </ProductLabel>
-                <ProductSkuEditor setValue={setValue} control={control} mt={2} isMulti={isMulti} />
+                <ProductSkuEditor getValues={getValues} setValue={setValue} control={control} mt={2} isMulti={isMulti} />
             </Box>
             <Toolbar />
             <AppBar

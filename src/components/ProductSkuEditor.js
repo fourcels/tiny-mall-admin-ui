@@ -4,9 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ImageUpload from './ImageUpload';
 import ClearIcon from '@mui/icons-material/Clear';
-import { Controller, useFieldArray } from 'react-hook-form';
-
-const DEFAULT_SKU = { name: '', price: '', stock: '', sn: '', image: '' }
+import { Controller, useFieldArray, useWatch } from 'react-hook-form';
 
 function ProdouctSku(props) {
     const {
@@ -118,7 +116,6 @@ function ProductAttrItem(props) {
     )
 }
 
-const DEFAULT_ITEM = { value: '', image: '' }
 function ProductAttr(props) {
     const {
         control,
@@ -131,7 +128,7 @@ function ProductAttr(props) {
         name: `${name}.items`, // unique name for your Field Array,
     })
     const handleAddItem = () => {
-        append(DEFAULT_ITEM);
+        append(getDefaultItem());
     }
     const handleDeleteItem = (i) => {
         remove(i)
@@ -170,7 +167,6 @@ function ProductAttr(props) {
     )
 }
 
-const DEFAULT_ATTR = { name: '', items: [DEFAULT_ITEM] }
 function ProductAttrEditor(props) {
     const {
         control,
@@ -183,7 +179,7 @@ function ProductAttrEditor(props) {
     })
 
     const handleAdd = () => {
-        append(DEFAULT_ATTR);
+        append(getDefaultAttr());
     }
     const handleDelete = (i) => {
         remove(i)
@@ -200,7 +196,8 @@ function ProductAttrEditor(props) {
 }
 
 function cartesian(arr) {
-    if (arr.length < 2) return arr[0] || [];
+    if (arr.length === 0) return []
+    if (arr.length === 1) return arr[0].map(item => [item]);
     return arr.reduce((previous, current) => {
         let res = [];
         previous.forEach(p => {
@@ -226,22 +223,46 @@ function getRowSpan(arr) {
 
 function ProductSkuTable(props) {
     const {
+        control,
+        getValues,
         sx,
         ...rest
     } = props
-    const attrs = [
-        { name: '颜色', items: ['红色', '蓝色', '黄色'] },
-        { name: '尺寸', items: ['S', 'M', 'L'] },
-    ]
-    const itemsArr = attrs.map((item) => item.items)
-    const dataList = cartesian(itemsArr)
-    const rowSpan = getRowSpan(itemsArr)
+
+    const attrs = useWatch({ name: 'attrs', control })
+    const [dataList, rowSpan] = React.useMemo(() => {
+        const itemsArr = attrs?.filter((item) => !!item.name)
+            .map((item) => item.items.filter((item) => !!item.value)) || []
+        const dataList = cartesian(itemsArr)
+        const rowSpan = getRowSpan(itemsArr)
+        return [dataList, rowSpan]
+    }, [attrs])
+    const { fields, replace } = useFieldArray({
+        name: 'skus',
+        control,
+    })
+    React.useEffect(() => {
+        const skus = getValues('skus')
+        replace(dataList.map((item) => {
+            const name = item.map((item) => item.value).join(',')
+            const sku = skus.find((item) => item.name === name)
+            console.log(sku);
+            return sku || {
+                attrs: item,
+                name,
+                price: 1000,
+                stock: 10000,
+                sn: ''
+            }
+        }))
+    }, [dataList, getValues])
+
     return (
         <TableContainer sx={{ maxHeight: 440, ...sx }} component={Paper} {...rest}>
             <Table stickyHeader>
                 <TableHead>
                     <TableRow>
-                        {attrs.map((item, i) => (
+                        {attrs?.map((item, i) => (
                             <TableCell align="center" key={i}>{item.name}</TableCell>
                         ))}
                         <TableCell>价格(元)</TableCell>
@@ -250,19 +271,72 @@ function ProductSkuTable(props) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {dataList.map((item, i) => (
-                        <TableRow key={i}>
-                            {item.map((item2, i2) => (
-                                (i % rowSpan[i2] === 0 && <TableCell sx={{ borderRight: 1, borderColor: 'divider' }} align="center" key={i2} rowSpan={rowSpan[i2]}>{item2}</TableCell>)
+                    {fields.map((item, i) => (
+                        <TableRow key={item.id}>
+                            {item.attrs.map((item2, i2) => (
+                                (i % rowSpan[i2] === 0 && <TableCell sx={{ borderRight: 1, borderColor: 'divider' }} align="center" key={i2} rowSpan={rowSpan[i2]}>{item2.value}</TableCell>)
                             ))}
                             <TableCell>
-                                <TextField label="价格" required size='small' type="number" inputProps={{ min: 0 }} />
+                                <Controller
+                                    defaultValue=""
+                                    name={`skus.${i}.price`}
+                                    control={control}
+                                    rules={{
+                                        required: '价格不能为空',
+                                        min: { value: 0, message: '价格必须大于等于0' },
+                                    }}
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            label="价格"
+                                            required
+                                            size='small'
+                                            type="number"
+                                            inputProps={{ min: 0 }}
+                                            {...field}
+                                            error={!!fieldState.error}
+                                            helperText={fieldState.error?.message}
+                                        />
+                                    )}
+                                />
                             </TableCell>
                             <TableCell>
-                                <TextField label="库存" required size='small' type="number" inputProps={{ min: 0 }} />
+                                <Controller
+                                    defaultValue=""
+                                    name={`skus.${i}.stock`}
+                                    control={control}
+                                    rules={{
+                                        required: '库存不能为空',
+                                        min: { value: 0, message: '库存必须大于等于0' },
+                                    }}
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            label="库存"
+                                            required
+                                            size='small'
+                                            type="number"
+                                            inputProps={{ min: 0 }}
+                                            {...field}
+                                            error={!!fieldState.error}
+                                            helperText={fieldState.error?.message}
+                                        />
+                                    )}
+                                />
                             </TableCell>
                             <TableCell>
-                                <TextField label="商品编号" size='small' />
+                                <Controller
+                                    defaultValue=""
+                                    name={`skus.${i}.sn`}
+                                    control={control}
+                                    render={({ field, fieldState }) => (
+                                        <TextField
+                                            label="商品编号"
+                                            size='small'
+                                            {...field}
+                                            error={!!fieldState.error}
+                                            helperText={fieldState.error?.message}
+                                        />
+                                    )}
+                                />
                             </TableCell>
                         </TableRow>
                     ))}
@@ -274,36 +348,49 @@ function ProductSkuTable(props) {
 
 function ProductMultiSku(props) {
     const {
+        getValues,
         control
     } = props
     return (
         <Box>
             <ProductAttrEditor control={control} />
-            <ProductSkuTable sx={{ mt: 2 }} />
+            <ProductSkuTable getValues={getValues} control={control} sx={{ mt: 2 }} />
         </Box>
     )
 }
 
+function getDefaultItem() {
+    return { value: '', image: '' }
+}
+
+function getDefaultAttr() {
+    return { name: '', items: [getDefaultItem()] }
+}
+
+function getDefaultSku() {
+    return { name: '', price: '', stock: '', sn: '', image: '' }
+}
 
 export default function ProductSkuEditor(props) {
     const {
         isMulti,
         control,
         setValue,
+        getValues,
         ...rest
     } = props
     React.useEffect(() => {
         if (isMulti) {
-            setValue('attrs', [DEFAULT_ATTR])
+            setValue('attrs', [getDefaultAttr()])
             setValue('skus', undefined)
         } else {
             setValue('attrs', undefined)
-            setValue('skus', [DEFAULT_SKU])
+            setValue('skus', [getDefaultSku()])
         }
     }, [isMulti])
     return (
         <Box {...rest}>
-            {isMulti ? <ProductMultiSku control={control} /> : <ProdouctSku control={control} />}
+            {isMulti ? <ProductMultiSku getValues={getValues} control={control} /> : <ProdouctSku control={control} />}
         </Box>
     )
 }
