@@ -23,7 +23,7 @@ function ProductLabel(props) {
 }
 
 export default function ProductCreate() {
-    const [isMulti, setIsMulti] = React.useState(true)
+    const [isMulti, setIsMulti] = React.useState(false)
     const { handleSubmit, control, setValue, getValues } = useForm();
     const onSubmit = async (params) => {
         const data = await apis.product.create(params)
@@ -44,11 +44,12 @@ export default function ProductCreate() {
                     name="name"
                     control={control}
                     rules={{ required: '商品名称不能为空' }}
-                    render={({ field, fieldState }) => (
+                    render={({ field: { ref, ...rest }, fieldState }) => (
                         <TextField
                             label="商品名称"
                             required
-                            {...field}
+                            {...rest}
+                            inputRef={ref}
                             error={!!fieldState.error}
                             helperText={fieldState.error?.message}
                         />

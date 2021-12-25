@@ -23,8 +23,8 @@ function UploadButton(props) {
     } = props
 
     return (
-        <label htmlFor="upload-file">
-            <Input onChange={onChange} accept="image/*" id="upload-file" multiple={multiple} type="file" />
+        <label>
+            <Input onChange={onChange} accept="image/*" multiple={multiple} type="file" />
 
             <Box sx={(theme) => ({
                 display: 'flex',
@@ -33,6 +33,9 @@ function UploadButton(props) {
                 justifyContent: 'center',
                 height: { height },
                 width: { width },
+                border: 1,
+                borderColor: 'divider',
+                boxSizing: 'content-box',
                 color: theme.palette.text.secondary,
                 backgroundColor: theme.palette.grey[100],
                 borderRadius: theme.shape.borderRadius,
@@ -81,9 +84,8 @@ function ImageItem(props) {
                 <Image width={width} height={height} src={src} objectFit="cover" />
                 <Stack
                     direction="row"
-                    justifyContent="center"
+                    justifyContent="space-evenly"
                     alignItems="center"
-                    gap={2}
                     className='actions'
                     sx={{
                         display: 'none',

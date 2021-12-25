@@ -1,10 +1,12 @@
-import { Avatar, Box, Button, Chip, Divider, FormControlLabel, IconButton, InputAdornment, Paper, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material'
+import { Avatar, Box, Button, Chip, Divider, FormControlLabel, IconButton, InputAdornment, Paper, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '@mui/material'
 import React from 'react'
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ImageUpload from './ImageUpload';
 import ClearIcon from '@mui/icons-material/Clear';
 import { Controller, useFieldArray, useWatch } from 'react-hook-form';
+import PriceInput from './PriceInput'
+
 
 function ProdouctSku(props) {
     const {
@@ -41,6 +43,9 @@ function ProdouctSku(props) {
                         required
                         type="number"
                         inputProps={{ min: 0 }}
+                        InputProps={{
+                            inputComponent: PriceInput
+                        }}
                         {...field}
                         error={!!fieldState.error}
                         helperText={fieldState.error?.message}
@@ -53,14 +58,17 @@ function ProdouctSku(props) {
                 control={control}
                 rules={{
                     required: '库存不能为空',
-                    min: { value: 0, message: '价格必须大于等于0' },
+                    min: { value: 0, message: '库存必须大于等于0' },
+                    pattern: { value: /^\d+$/, message: '库存必须为整数' }
                 }}
                 render={({ field, fieldState }) => (
                     <TextField
                         label="库存"
                         required
                         type="number"
-                        inputProps={{ min: 0 }}
+                        inputProps={{
+                            min: 0,
+                        }}
                         {...field}
                         error={!!fieldState.error}
                         helperText={fieldState.error?.message}
@@ -93,7 +101,7 @@ function ProductAttrItem(props) {
         ...rest
     } = props
     return (
-        <Stack direction="row" gap={2} alignItems="center" {...rest}>
+        <Stack gap={2} direction="row" alignItems="center" bgcolor="grey.100" borderRadius={1} py={1} px={2} {...rest}>
             <Controller
                 defaultValue=""
                 name={`${name}.value`}
@@ -104,14 +112,31 @@ function ProductAttrItem(props) {
                         label="规格值"
                         size="small"
                         required
+                        sx={{ maxWidth: 150 }}
                         {...field}
                         error={!!fieldState.error}
                         helperText={fieldState.error?.message}
+                        InputProps={{
+                            endAdornment: showDeleteButton && (
+                                <InputAdornment position="end">
+                                    <Tooltip title="删除">
+                                        <IconButton onClick={handleDeleteItem} edge="end" color="error"><DeleteIcon /></IconButton>
+                                    </Tooltip>
+                                </InputAdornment>
+                            )
+                        }}
                     />
                 )}
             />
-            <ImageUpload height={48} width={48} />
-            {showDeleteButton && <Button onClick={handleDeleteItem} startIcon={<DeleteIcon />} color="error">删除</Button>}
+            <Controller
+                defaultValue=""
+                name={`${name}.image`}
+                control={control}
+                rules={{ required: '规格值不能为空' }}
+                render={({ field }) => (
+                    <ImageUpload width={60} height={60} onChange={field.onChange} />
+                )}
+            />
         </Stack>
     )
 }
@@ -155,12 +180,14 @@ function ProductAttr(props) {
                 {showDeleteButton && <Button color="error" onClick={handleDelete} startIcon={<DeleteIcon />} variant="outlined">删除规格</Button>}
             </Stack>
             <Stack mt={2} gap={2}>
-                {fields.map((item, i) => (
-                    <ProductAttrItem control={control} showDeleteButton={fields.length > 1} key={item.id} name={`${name}.items.${i}`} handleDeleteItem={() => handleDeleteItem(i)} />
-                ))}
-                <Box>
-                    <Button onClick={handleAddItem} startIcon={<AddIcon />}>添加规格值</Button>
-                </Box>
+                <Stack direction="row" alignItems="center" flexWrap="wrap" gap={2}>
+                    {fields.map((item, i) => (
+                        <ProductAttrItem control={control} showDeleteButton={fields.length > 1} key={item.id} name={`${name}.items.${i}`} handleDeleteItem={() => handleDeleteItem(i)} />
+                    ))}
+                    <Box>
+                        <Button onClick={handleAddItem} startIcon={<AddIcon />}>添加规格值</Button>
+                    </Box>
+                </Stack>
                 <Divider sx={{ mb: 2 }} />
             </Stack>
         </Stack>
@@ -246,14 +273,7 @@ function ProductSkuTable(props) {
         replace(dataList.map((item) => {
             const name = item.map((item) => item.value).join(',')
             const sku = skus.find((item) => item.name === name)
-            console.log(sku);
-            return sku || {
-                attrs: item,
-                name,
-                price: 1000,
-                stock: 10000,
-                sn: ''
-            }
+            return sku || getDefaultSku()
         }))
     }, [dataList, getValues])
 
@@ -273,7 +293,7 @@ function ProductSkuTable(props) {
                 <TableBody>
                     {fields.map((item, i) => (
                         <TableRow key={item.id}>
-                            {item.attrs.map((item2, i2) => (
+                            {dataList[i]?.map((item2, i2) => (
                                 (i % rowSpan[i2] === 0 && <TableCell sx={{ borderRight: 1, borderColor: 'divider' }} align="center" key={i2} rowSpan={rowSpan[i2]}>{item2.value}</TableCell>)
                             ))}
                             <TableCell>
@@ -292,6 +312,9 @@ function ProductSkuTable(props) {
                                             size='small'
                                             type="number"
                                             inputProps={{ min: 0 }}
+                                            InputProps={{
+                                                inputComponent: PriceInput
+                                            }}
                                             {...field}
                                             error={!!fieldState.error}
                                             helperText={fieldState.error?.message}
@@ -307,6 +330,7 @@ function ProductSkuTable(props) {
                                     rules={{
                                         required: '库存不能为空',
                                         min: { value: 0, message: '库存必须大于等于0' },
+                                        pattern: { value: /^\d+$/, message: '库存必须为整数' }
                                     }}
                                     render={({ field, fieldState }) => (
                                         <TextField
@@ -368,7 +392,7 @@ function getDefaultAttr() {
 }
 
 function getDefaultSku() {
-    return { name: '', price: '', stock: '', sn: '', image: '' }
+    return { name: '', price: 1000, stock: 10000, sn: '', image: '' }
 }
 
 export default function ProductSkuEditor(props) {

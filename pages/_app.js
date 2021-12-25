@@ -13,6 +13,7 @@ import '../src/axios'
 import { SnackbarUtilsConfigurator } from '../src/notistack'
 import { SnackbarProvider } from 'notistack';
 import { ConfirmProvider } from 'material-ui-confirm';
+import '../styles/globals.css'
 
 
 
