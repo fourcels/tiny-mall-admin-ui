@@ -84,7 +84,6 @@ function ProfileMenu() {
                     vertical: 'bottom',
                     horizontal: 'right',
                 }}
-                keepMounted
                 transformOrigin={{
                     vertical: 'top',
                     horizontal: 'right',

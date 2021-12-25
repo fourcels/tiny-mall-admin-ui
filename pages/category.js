@@ -11,6 +11,7 @@ import notistack from '../src/notistack';
 import { useConfirm } from 'material-ui-confirm';
 import Link from '../src/components/Link';
 import { useRouter } from 'next/router';
+import FieldEditor from '../src/components/FieldEditor'
 
 function CreateButton({ onRefresh }) {
     const [open, setOpen] = React.useState(false);
@@ -74,7 +75,6 @@ function EditButton({ onRefresh, data }) {
     const { handleSubmit, control } = useForm({
         defaultValues: {
             name: data.name,
-            sort: data.sort,
         }
     });
     const onSubmit = async (params) => {
@@ -111,24 +111,6 @@ function EditButton({ onRefresh, data }) {
                                     margin="normal"
                                     required
                                     autoFocus
-                                    {...field}
-                                    error={!!fieldState.error}
-                                    helperText={fieldState.error?.message}
-                                />
-                            )}
-                        />
-                        <Controller
-                            defaultValue=""
-                            name="sort"
-                            control={control}
-                            rules={{ required: '排序不能为空' }}
-                            render={({ field, fieldState }) => (
-                                <TextField
-                                    label="排序"
-                                    margin="normal"
-                                    required
-                                    autoFocus
-                                    type="number"
                                     {...field}
                                     error={!!fieldState.error}
                                     helperText={fieldState.error?.message}
@@ -173,6 +155,20 @@ function DataTable(props) {
         onRefresh()
     }
 
+    const handleSortEdit = async (id, value) => {
+        try {
+            await apis.category.update(id, { sort: value })
+            onRefresh()
+            return true
+        } catch (error) {
+            if (error.response?.status == 400) {
+                notistack.error(error.response.data?.detail || '参数错误')
+                return false
+            }
+            throw error
+        }
+    }
+
     return (
         <Paper {...rest}>
             <TableContainer sx={{ height: 440 }}>
@@ -181,13 +177,13 @@ function DataTable(props) {
                         <TableRow>
                             <TableCell >名称</TableCell>
                             <TableCell align="center">商品数量</TableCell>
-                            <TableCell align="center">排序</TableCell>
+                            <TableCell width={250} align="center">排序</TableCell>
                             <TableCell align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {list?.map((row, index) => (
-                            <TableRow hover key={index}>
+                            <TableRow hover key={row.id}>
                                 <TableCell>
                                     {row.name}
                                 </TableCell>
@@ -203,7 +199,20 @@ function DataTable(props) {
                                         {row.product_count}
                                     </Link>
                                 </TableCell>
-                                <TableCell align="center">{row.sort}</TableCell>
+                                <TableCell align="center">
+                                    <FieldEditor
+                                        onEdit={(params) => handleSortEdit(row.id, params)}
+                                        value={row.sort}
+                                        rules={{
+                                            required: '排序不能为空',
+                                            pattern: {
+                                                value: /^\d+$/,
+                                                message: '排序必须为整数'
+                                            }
+                                        }}
+                                        type='number'
+                                    />
+                                </TableCell>
                                 <TableCell align="center">
                                     <EditButton onRefresh={onRefresh} data={row} />
                                     <Button color="error" variant="text" onClick={() => handleDelete(row)}>删除</Button>
