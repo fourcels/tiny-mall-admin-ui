@@ -7,8 +7,6 @@ import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Image from './Image'
 
-const STATIC_BASE_URL = process.env.NEXT_PUBLIC_STATIC_BASE_URL
-
 
 const Input = styled('input')({
     display: 'none',
@@ -65,7 +63,6 @@ function ImageItem(props) {
     const handleToggle = () => {
         setOpen(!open);
     };
-    const src = React.useMemo(() => `${STATIC_BASE_URL}/${url}`)
     return (
         <React.Fragment>
             <Box
@@ -81,7 +78,7 @@ function ImageItem(props) {
                     }
                 })}
             >
-                <Image width={width} height={height} src={src} objectFit="cover" />
+                <Image width={width} height={height} src={url} objectFit="cover" />
                 <Stack
                     direction="row"
                     justifyContent="space-evenly"
@@ -125,7 +122,7 @@ function ImageItem(props) {
                 open={open}
                 onClick={handleClose}
             >
-                <Image width="80%" height="80%" src={src} objectFit="contain" />
+                <Image width="80%" height="80%" src={url} objectFit="contain" />
             </Backdrop>
         </React.Fragment >
     )

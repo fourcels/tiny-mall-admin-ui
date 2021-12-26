@@ -26,6 +26,9 @@ export default function ProductCreate() {
     const [isMulti, setIsMulti] = React.useState(false)
     const { handleSubmit, control, setValue, getValues } = useForm();
     const onSubmit = async (params) => {
+        if (params.category_id === '') {
+            delete params.category_id
+        }
         const data = await apis.product.create(params)
     }
     const toggleMulti = (event) => {

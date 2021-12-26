@@ -161,9 +161,15 @@ function DataTable(props) {
             onRefresh()
             return true
         } catch (error) {
-            if (error.response?.status == 400) {
-                notistack.error(error.response.data?.detail || '参数错误')
-                return false
+            if (error.response) {
+                if (error.response.status == 400 || error.response.status == 422) {
+                    let message = error.response.data?.detail
+                    if (typeof message === 'object') {
+                        message = JSON.stringify(message)
+                    }
+                    notistack.error(message || '参数错误')
+                    return false
+                }
             }
             throw error
         }
