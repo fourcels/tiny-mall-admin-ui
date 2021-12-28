@@ -9,21 +9,10 @@ import { useRouter } from 'next/router';
 import useList from '../../src/hooks/useList';
 import Image from '../../src/components/Image'
 import apis from '../../src/apis'
+import FieldEditor from '../../src/components/FieldEditor';
+import { useConfirm } from 'material-ui-confirm';
+import axios from 'axios';
 
-
-function createData(name, sku, price, stock, category, status) {
-    return { name, sku, price, stock, category, status };
-}
-
-const rows = [
-    createData('水果', 'ABC', 100, 10000, '蔬菜', true),
-    createData('水果', 'ABC', 100, 10000, '蔬菜', false),
-    createData('水果', 'ABC', 100, 10000, '蔬菜', true),
-    createData('水果', 'ABC', 100, 10000, '蔬菜', true),
-    createData('水果', 'ABC', 100, 10000, '蔬菜', true),
-    createData('水果', 'ABC', 100, 10000, '蔬菜', true),
-    createData('水果', 'ABC', 100, 10000, '蔬菜', true),
-];
 
 function FilterBar(props) {
     const {
@@ -91,10 +80,10 @@ function ProductInfo({ data }) {
 function ProductSkus({ data }) {
     return (
         data.attrs ? (
-            <Stack>
+            <Stack display="inline-flex">
                 {data.attrs.map((item, i) => (
                     <Stack key={i} direction="row" gap={1}>
-                        <Typography fontWeight={500}>{item.name}:</Typography>
+                        <Typography fontWeight={500} noWrap>{item.name}:</Typography>
                         <Typography>{item.items.map((item) => item.value).join(', ')}</Typography>
                     </Stack>
                 ))}
@@ -128,14 +117,40 @@ function DataTable(props) {
             await apis.product.update(id, { status })
             onRefresh()
         } catch (error) {
-            if (error.response) {
-                if (error.response.status == 400 || error.response.status == 422) {
-                    let message = error.response.data?.detail
-                    if (typeof message === 'object') {
-                        message = JSON.stringify(message)
-                    }
-                    notistack.error(message || '参数错误')
-                }
+            if (axios.isAxiosError(error)) {
+                return
+            }
+            throw error
+        }
+    }
+
+    const confirm = useConfirm()
+
+    const handleDelete = async (data) => {
+        try {
+            await confirm({ title: `确定删除商品 ${data.name}` })
+        } catch {
+            return
+        }
+        try {
+            await apis.product.remove(data.id)
+            onRefresh()
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                return
+            }
+            throw error
+        }
+    }
+
+    const handleSortEdit = async (id, value) => {
+        try {
+            await apis.product.update(id, { sort: value })
+            onRefresh()
+            return true
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                return false
             }
             throw error
         }
@@ -147,11 +162,12 @@ function DataTable(props) {
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell >名称</TableCell>
-                            <TableCell align="center">规格</TableCell>
-                            <TableCell align="center">价格(元)</TableCell>
-                            <TableCell align="center">分类</TableCell>
-                            <TableCell align="center">库存</TableCell>
+                            <TableCell width={180}>名称</TableCell>
+                            <TableCell align="center" width={150}>规格</TableCell>
+                            <TableCell align="center" width={100}>价格(元)</TableCell>
+                            <TableCell align="center" width={100}>分类</TableCell>
+                            <TableCell align="center" width={100}>库存</TableCell>
+                            <TableCell align="center" width={200}>排序</TableCell>
                             <TableCell align="center">是否在售</TableCell>
                             <TableCell align="center">操作</TableCell>
                         </TableRow>
@@ -171,12 +187,25 @@ function DataTable(props) {
                                 <TableCell align="center">{row.category ? row.category.name : '-'}</TableCell>
                                 <TableCell align="center">{row.attrs ? '-' : row.skus[0].stock}</TableCell>
                                 <TableCell align="center">
+                                    <FieldEditor
+                                        onEdit={(params) => handleSortEdit(row.id, params)}
+                                        value={row.sort}
+                                        rules={{
+                                            required: '排序不能为空',
+                                            pattern: {
+                                                value: /^\d+$/,
+                                                message: '排序必须为整数'
+                                            }
+                                        }}
+                                        type='number'
+                                    />
+                                </TableCell>
+                                <TableCell align="center">
                                     <ProductStatus onChange={(event) => handleChangeStatus(row.id, event.target.checked)} value={row.status} />
                                 </TableCell>
                                 <TableCell align="center">
-                                    <Button variant="text" color="secondary">复制</Button>
-                                    <Button variant="text">编辑</Button>
-                                    <Button variant="text" color="error">删除</Button>
+                                    <Button component={Link} href={`/product/${row.id}`} variant="text">编辑</Button>
+                                    <Button onClick={() => handleDelete(row)} variant="text" color="error">删除</Button>
                                 </TableCell>
                             </TableRow>
                         ))}

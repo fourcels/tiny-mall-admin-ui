@@ -11,9 +11,20 @@ axios.interceptors.request.use(function (config) {
 });
 
 axios.interceptors.response.use((response) => response, (error) => {
-    if (401 === error.response?.status) {
-        Router.push('/sign-in')
+    let message = ''
+    if (error.response) {
+        const { status, data } = error.response
+        if (401 === status) {
+            Router.push('/sign-in')
+            message = data.detail
+        } else if (400 === status) {
+            message = data.detail
+        } else if (422 === status) {
+            message = '参数错误'
+        }
+    } else {
+        message = error.message
     }
+    message && notistack.error(message)
     return Promise.reject(error);
-
 })

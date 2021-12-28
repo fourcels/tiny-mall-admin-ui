@@ -27,9 +27,9 @@ export default function ProductCreate() {
     const { handleSubmit, control, setValue, getValues } = useForm();
     const onSubmit = async (params) => {
         if (params.category_id === '') {
-            delete params.category_id
+            params.category_id = 0
         }
-        const data = await apis.product.create(params)
+        await apis.product.create(params)
     }
     const toggleMulti = (event) => {
         setIsMulti(event.target.checked);

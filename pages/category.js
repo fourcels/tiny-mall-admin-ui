@@ -12,6 +12,7 @@ import { useConfirm } from 'material-ui-confirm';
 import Link from '../src/components/Link';
 import { useRouter } from 'next/router';
 import FieldEditor from '../src/components/FieldEditor'
+import axios from 'axios';
 
 function CreateButton({ onRefresh }) {
     const [open, setOpen] = React.useState(false);
@@ -25,8 +26,7 @@ function CreateButton({ onRefresh }) {
             reset()
             onRefresh()
         } catch (error) {
-            if (error.response?.status === 400) {
-                notistack.error(error.response.data?.detail || '参数错误')
+            if (axios.isAxiosError(error)) {
                 return
             }
             throw error
@@ -83,8 +83,7 @@ function EditButton({ onRefresh, data }) {
             setOpen(false)
             onRefresh()
         } catch (error) {
-            if (error.response?.status === 400) {
-                notistack.error(error.response.data?.detail || '参数错误')
+            if (axios.isAxiosError(error)) {
                 return
             }
             throw error
@@ -147,12 +146,19 @@ function DataTable(props) {
 
     const handleDelete = async (data) => {
         try {
-            await confirm({ title: `是否确定删除商品分类 ${data.name}` })
+            await confirm({ title: `确定删除商品分类 ${data.name}` })
         } catch {
             return
         }
-        await apis.category.remove(data.id)
-        onRefresh()
+        try {
+            await apis.category.remove(data.id)
+            onRefresh()
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                return
+            }
+            throw error
+        }
     }
 
     const handleSortEdit = async (id, value) => {
@@ -161,15 +167,8 @@ function DataTable(props) {
             onRefresh()
             return true
         } catch (error) {
-            if (error.response) {
-                if (error.response.status == 400 || error.response.status == 422) {
-                    let message = error.response.data?.detail
-                    if (typeof message === 'object') {
-                        message = JSON.stringify(message)
-                    }
-                    notistack.error(message || '参数错误')
-                    return false
-                }
+            if (axios.isAxiosError(error)) {
+                return false
             }
             throw error
         }

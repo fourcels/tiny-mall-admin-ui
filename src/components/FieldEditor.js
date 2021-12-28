@@ -36,12 +36,10 @@ function TextEdit(props) {
         }
     });
     const onSubmit = async (params) => {
-        try {
-            const res = await onEdit(params.value)
-            if (res) {
-                closeEdit()
-            }
-        } catch (error) { throw error }
+        const success = await onEdit(params.value)
+        if (success) {
+            closeEdit()
+        }
     }
     return (
         <Stack display="inline-flex" alignItems="center" direction="row" gap={1}>
@@ -52,7 +50,7 @@ function TextEdit(props) {
                 rules={rules}
                 render={({ field: { ref, ...rest }, fieldState }) => (
                     <TextField
-                        sx={{ width: 120 }}
+                        sx={{ width: 80 }}
                         size='small'
                         required
                         autoFocus
