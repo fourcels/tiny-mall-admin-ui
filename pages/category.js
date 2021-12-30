@@ -3,22 +3,23 @@ import React from 'react';
 import Layout from '../src/layouts/Layout';
 import AddIcon from '@mui/icons-material/Add';
 import useList from '../src/hooks/useList'
-import { Box } from '@mui/system';
 import { Controller, useForm } from 'react-hook-form';
 import apis from '../src/apis'
-import { useSWRConfig } from 'swr';
-import notistack from '../src/notistack';
 import { useConfirm } from 'material-ui-confirm';
 import Link from '../src/components/Link';
 import { useRouter } from 'next/router';
 import FieldEditor from '../src/components/FieldEditor'
-import axios from 'axios';
+import { APIError } from '../src/errors';
 
 function CreateButton({ onRefresh }) {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const { handleSubmit, control, reset } = useForm();
+    const { handleSubmit, control, reset } = useForm({
+        defaultValues: {
+            name: ''
+        }
+    });
     const onSubmit = async (params) => {
         try {
             await apis.category.create(params)
@@ -26,7 +27,7 @@ function CreateButton({ onRefresh }) {
             reset()
             onRefresh()
         } catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (error instanceof APIError) {
                 return
             }
             throw error
@@ -83,7 +84,7 @@ function EditButton({ onRefresh, data }) {
             setOpen(false)
             onRefresh()
         } catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (error instanceof APIError) {
                 return
             }
             throw error
@@ -154,7 +155,7 @@ function DataTable(props) {
             await apis.category.remove(data.id)
             onRefresh()
         } catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (error instanceof APIError) {
                 return
             }
             throw error
@@ -167,7 +168,7 @@ function DataTable(props) {
             onRefresh()
             return true
         } catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (error instanceof APIError) {
                 return false
             }
             throw error

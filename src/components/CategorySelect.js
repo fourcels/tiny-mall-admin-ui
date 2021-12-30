@@ -6,17 +6,18 @@ export default function (props) {
     const {
         control
     } = props
-    const { list } = useList('/admin/categories/all')
+    const { list, loading } = useList('/admin/categories/all')
     return (
         <Controller
             defaultValue=""
             name="category_id"
             control={control}
-            render={({ field, fieldState }) => (
+            render={({ field: { value, ...rest }, fieldState }) => (
                 <TextField
                     select
                     label="商品分类"
-                    {...field}
+                    value={loading ? '' : value}
+                    {...rest}
                     error={!!fieldState.error}
                     helperText={fieldState.error?.message}
                 >

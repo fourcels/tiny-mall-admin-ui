@@ -2,10 +2,11 @@ import { AppBar, Box, Button, Container, FormControlLabel, IconButton, MenuItem,
 import PageLayout from '../../src/layouts/PageLayout';
 import ImageUpload from '../../src/components/ImageUpload'
 import React from 'react';
-import ProductSkuEditor from '../../src/components/ProductSkuEditor'
+import ProductSkuEditor, { getDefaultAttr, getDefaultSku } from '../../src/components/ProductSkuEditor'
 import { Controller, useForm } from 'react-hook-form';
 import CategorySelect from '../../src/components/CategorySelect';
 import apis from '../../src/apis';
+import { useRouter } from 'next/router';
 
 
 function ProductLabel(props) {
@@ -23,13 +24,25 @@ function ProductLabel(props) {
 }
 
 export default function ProductCreate() {
+    const router = useRouter()
     const [isMulti, setIsMulti] = React.useState(false)
+
+    React.useEffect(() => {
+        if (isMulti) {
+            setValue('attrs', [getDefaultAttr()])
+            setValue('skus', undefined)
+        } else {
+            setValue('attrs', undefined)
+            setValue('skus', [getDefaultSku()])
+        }
+    }, [isMulti])
     const { handleSubmit, control, setValue, getValues } = useForm();
     const onSubmit = async (params) => {
         if (params.category_id === '') {
             params.category_id = 0
         }
         await apis.product.create(params)
+        router.back()
     }
     const toggleMulti = (event) => {
         setIsMulti(event.target.checked);
@@ -92,6 +105,7 @@ export default function ProductCreate() {
                             mt={2}
                             multiple
                             max={10}
+                            value={field.value}
                             onChange={field.onChange}
                         />
                     )}

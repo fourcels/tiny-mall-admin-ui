@@ -135,12 +135,15 @@ export default function ImageUpload(props) {
         height = 120,
         multiple = false,
         max = 0,
+        value,
         onChange,
         ...rest
     } = props
-    const [images, setImages] = React.useState([])
+    const [images, setImages] = React.useState(value ? (Array.isArray(value) ? value : [value]) : [])
 
-    React.useEffect(() => onChange?.(images), [images])
+    React.useEffect(() => {
+        onChange?.(multiple ? images : (images[0] || ''))
+    }, [images])
 
     const handleChange = async (e) => {
         let files = [...e.target.files]

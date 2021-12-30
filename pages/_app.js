@@ -33,7 +33,15 @@ export default function MyApp(props) {
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           <NextNProgress />
-          <SnackbarProvider maxSnack={3} anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}>
+          <SnackbarProvider
+            maxSnack={3}
+            anchorOrigin={{
+              horizontal: 'center',
+              vertical: 'bottom'
+            }}
+            preventDuplicate
+            autoHideDuration={3000}
+          >
             <SnackbarUtilsConfigurator />
             <ConfirmProvider
               defaultOptions={{

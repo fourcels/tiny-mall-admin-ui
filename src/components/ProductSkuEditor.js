@@ -132,9 +132,8 @@ function ProductAttrItem(props) {
                 defaultValue=""
                 name={`${name}.image`}
                 control={control}
-                rules={{ required: '规格值不能为空' }}
                 render={({ field }) => (
-                    <ImageUpload width={60} height={60} onChange={field.onChange} />
+                    <ImageUpload value={field.value} width={60} height={60} onChange={field.onChange} />
                 )}
             />
         </Stack>
@@ -273,7 +272,7 @@ function ProductSkuTable(props) {
         replace(dataList.map((item) => {
             const name = item.map((item) => item.value).join(',')
             const sku = skus.find((item) => item.name === name)
-            return sku || getDefaultSku()
+            return sku || getDefaultSku(name)
         }))
     }, [dataList, getValues])
 
@@ -383,16 +382,16 @@ function ProductMultiSku(props) {
     )
 }
 
-function getDefaultItem() {
+export function getDefaultItem() {
     return { value: '', image: '' }
 }
 
-function getDefaultAttr() {
+export function getDefaultAttr() {
     return { name: '', items: [getDefaultItem()] }
 }
 
-function getDefaultSku() {
-    return { name: '', price: 1000, stock: 10000, sn: '', image: '' }
+export function getDefaultSku(name = '') {
+    return { name, price: 1000, stock: 10000, sn: '', image: '' }
 }
 
 export default function ProductSkuEditor(props) {
@@ -403,15 +402,6 @@ export default function ProductSkuEditor(props) {
         getValues,
         ...rest
     } = props
-    React.useEffect(() => {
-        if (isMulti) {
-            setValue('attrs', [getDefaultAttr()])
-            setValue('skus', undefined)
-        } else {
-            setValue('attrs', undefined)
-            setValue('skus', [getDefaultSku()])
-        }
-    }, [isMulti])
     return (
         <Box {...rest}>
             {isMulti ? <ProductMultiSku getValues={getValues} control={control} /> : <ProdouctSku control={control} />}
