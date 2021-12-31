@@ -266,6 +266,7 @@ function ProductSkuTable(props) {
     const { fields, replace } = useFieldArray({
         name: 'skus',
         control,
+        keyName: 'key',
     })
     React.useEffect(() => {
         const skus = getValues('skus')
@@ -291,7 +292,7 @@ function ProductSkuTable(props) {
                 </TableHead>
                 <TableBody>
                     {fields.map((item, i) => (
-                        <TableRow key={item.id}>
+                        <TableRow key={item.key}>
                             {dataList[i]?.map((item2, i2) => (
                                 (i % rowSpan[i2] === 0 && <TableCell sx={{ borderRight: 1, borderColor: 'divider' }} align="center" key={i2} rowSpan={rowSpan[i2]}>{item2.value}</TableCell>)
                             ))}

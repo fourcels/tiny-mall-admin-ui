@@ -4,13 +4,14 @@ import useList from '../hooks/useList'
 
 export default function (props) {
     const {
+        name = 'category_id',
         control
     } = props
     const { list, loading } = useList('/admin/categories/all')
     return (
         <Controller
             defaultValue=""
-            name="category_id"
+            name={name}
             control={control}
             render={({ field: { value, ...rest }, fieldState }) => (
                 <TextField

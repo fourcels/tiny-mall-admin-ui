@@ -123,28 +123,27 @@ function ProductContent({ data }) {
     )
 }
 
+function formatData(data) {
+    for (const key in data) {
+        if (data[key] == null) {
+            delete data[key]
+        }
+    }
+    return data
+}
+
 export default function ProductEdit() {
 
     const router = useRouter()
     const { id } = router.query
-    const { data, loading } = useInfo(router.isReady && `/admin/products/${id}`)
-
-    const formatData = React.useMemo(() => {
-        for (const key in data) {
-            if (data[key] == null) {
-                delete data[key]
-            }
-        }
-        return data
-    }, [data])
-
+    const { data, loading, isValidating } = useInfo(router.isReady && `/admin/products/${id}`)
     return (
         <PageLayout title="编辑商品">
             {loading ? (
                 <Box mt={2} textAlign="center">
                     <CircularProgress size={40} />
                 </Box>
-            ) : <ProductContent data={formatData} />}
+            ) : <ProductContent data={formatData(data)} />}
 
         </PageLayout >
     )

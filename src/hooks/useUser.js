@@ -3,10 +3,10 @@ import fetcher from '../fetcher';
 
 
 export default function useUser() {
-    const { data, error } = useSWRImmutable("/users/info", fetcher);
+    const { data, error, isValidating } = useSWRImmutable("/users/info", fetcher);
     const loading = !data && !error;
     return {
-        loading,
+        loading: loading || isValidating,
         user: data,
     };
 }

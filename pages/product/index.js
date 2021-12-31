@@ -12,13 +12,39 @@ import apis from '../../src/apis'
 import FieldEditor from '../../src/components/FieldEditor';
 import { useConfirm } from 'material-ui-confirm';
 import axios from 'axios';
+import { Controller, useForm } from 'react-hook-form';
+import CategorySelect from '../../src/components/CategorySelect';
 
+function filterQuery(query) {
+    for (const key in query) {
+        if (query[key] === '') {
+            delete query[key]
+        }
+    }
+    return query
+}
 
 function FilterBar(props) {
     const {
         sx,
+        defaultValues,
         ...rest
     } = props
+    const router = useRouter()
+    const { handleSubmit, control, reset } = useForm({ defaultValues });
+    const onSubmit = async (params) => {
+        const query = {
+            ...router.query,
+            ...params
+        }
+        router.push({
+            pathname: router.pathname,
+            query: filterQuery(query),
+        }, undefined, { shallow: true })
+    }
+    const onReset = () => {
+        reset({ name: '', category_id: '', status: '', sn: '' })
+    }
     return (
         <Paper sx={{ p: 3, ...sx }} {...rest}>
             <Stack
@@ -26,27 +52,52 @@ function FilterBar(props) {
                     '& .MuiTextField-root': { minWidth: 200 },
                 }}
                 direction="row" flexWrap="wrap" gap={2}>
-                <TextField label="商品名称" />
-                <TextField defaultValue="" select label="商品分类">
-                    <MenuItem value="">
-                        <em>无</em>
-                    </MenuItem>
-                    <MenuItem value={1}>水果</MenuItem>
-                    <MenuItem value={2}>蔬菜</MenuItem>
-                    <MenuItem value={3}>蛋糕</MenuItem>
-                </TextField>
-                <TextField defaultValue="" select label="商品状态">
-                    <MenuItem value="">
-                        <em>无</em>
-                    </MenuItem>
-                    <MenuItem value={1}>售卖中</MenuItem>
-                    <MenuItem value={0}>已下架</MenuItem>
-                </TextField>
-                <TextField label="商品编码" />
+                <Controller
+                    defaultValue=""
+                    name="name"
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            label="商品名称"
+                            {...field}
+                        />
+                    )}
+                />
+                <CategorySelect control={control} />
+                <Controller
+                    defaultValue=""
+                    name="status"
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            select
+                            label="在售状态"
+                            {...field}
+                        >
+                            <MenuItem value="">
+                                <em>无</em>
+                            </MenuItem>
+                            <MenuItem value={true}>上架中</MenuItem>
+                            <MenuItem value={false}>已下架</MenuItem>
+                        </TextField>
+                    )}
+                />
+
+                <Controller
+                    defaultValue=""
+                    name="sn"
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            label="商品编码"
+                            {...field}
+                        />
+                    )}
+                />
             </Stack>
             <Stack mt={2} direction="row" gap={2} alignItems="center">
-                <Button startIcon={<FilterAltIcon />} variant="contained">筛选</Button>
-                <Button startIcon={<ClearAllIcon />} variant="outlined" color="error">重置</Button>
+                <Button onClick={handleSubmit(onSubmit)} startIcon={<FilterAltIcon />} variant="contained">筛选</Button>
+                <Button onClick={onReset} startIcon={<ClearAllIcon />} variant="outlined" color="error">重置</Button>
             </Stack>
         </Paper>
     )
@@ -228,11 +279,11 @@ function DataTable(props) {
 
 export default function Product() {
     const router = useRouter()
-    const { page = 1, page_size = 10 } = router.query
+    const { page = 1, page_size = 10, ...rest } = router.query
 
     const { list, total, mutate, loading } = useList(router.isReady && [
         '/admin/products/',
-        { page, page_size }
+        { page, page_size, ...rest }
     ])
 
 
@@ -265,7 +316,7 @@ export default function Product() {
             <Stack direction="row" justifyContent="right">
                 <Button component={Link} href="/product/create" startIcon={<AddIcon />} variant="contained">添加新商品</Button>
             </Stack>
-            <FilterBar sx={{ mt: 2 }} />
+            {router.isReady && <FilterBar defaultValues={rest} sx={{ mt: 2 }} />}
             <DataTable
                 onRefresh={handleRefreh}
                 loading={loading}

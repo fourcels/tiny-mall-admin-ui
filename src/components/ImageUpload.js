@@ -74,7 +74,7 @@ function ImageItem(props) {
                     borderRadius: theme.shape.borderRadius,
                     overflow: 'hidden',
                     '&:hover .actions': {
-                        display: 'flex'
+                        visibility: 'visible'
                     }
                 })}
             >
@@ -85,7 +85,7 @@ function ImageItem(props) {
                     alignItems="center"
                     className='actions'
                     sx={{
-                        display: 'none',
+                        visibility: 'hidden',
                         position: 'absolute',
                         top: 0,
                         bottom: 0,

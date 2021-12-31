@@ -14,12 +14,12 @@ async function fetcher(url, params) {
 
 
 export default function useList(key) {
-    const { data, error, mutate } = useSWR(key, fetcher, {
+    const { data, error, isValidating, mutate } = useSWR(key, fetcher, {
         revalidateOnFocus: false
     });
     const loading = !data && !error;
     return {
-        loading,
+        loading: loading || isValidating,
         list: [],
         total: -1,
         mutate,
