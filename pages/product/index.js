@@ -27,11 +27,14 @@ function filterQuery(query) {
 function FilterBar(props) {
     const {
         sx,
-        defaultValues,
         ...rest
     } = props
     const router = useRouter()
-    const { handleSubmit, control, reset } = useForm({ defaultValues });
+    const { handleSubmit, control, reset } = useForm();
+    React.useEffect(() => {
+        const { name = '', category_id = '', status = '', sn = '' } = router.query
+        reset({ name, category_id, status, sn })
+    }, [router.query])
     const onSubmit = async (params) => {
         const query = {
             ...router.query,
@@ -316,7 +319,7 @@ export default function Product() {
             <Stack direction="row" justifyContent="right">
                 <Button component={Link} href="/product/create" startIcon={<AddIcon />} variant="contained">添加新商品</Button>
             </Stack>
-            {router.isReady && <FilterBar defaultValues={rest} sx={{ mt: 2 }} />}
+            <FilterBar sx={{ mt: 2 }} />
             <DataTable
                 onRefresh={handleRefreh}
                 loading={loading}
