@@ -1,6 +1,6 @@
 import { Box, Button, MenuItem, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from '@mui/material';
 import Layout from '../src/layouts/Layout';
-import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import React from 'react';
 import Link from '../src/components/Link';
 import Loading from '../src/components/Loading';
@@ -17,60 +17,47 @@ function Title(props) {
     );
 }
 
-// Generate Sales Data
-function createData(time, count) {
-    return { time, count };
-}
-
-const data = [
-    createData('00:00', 0),
-    createData('03:00', 300),
-    createData('06:00', 600),
-    createData('09:00', 800),
-    createData('12:00', 1500),
-    createData('15:00', 2000),
-    createData('18:00', 2400),
-    createData('21:00', 2400),
-    createData('24:00', undefined),
-];
-
 function Chart() {
+    const { list, loading } = useList('/admin/orders/stats')
     return (
         <Paper sx={{ p: 2 }}>
-            <Title>今日订单</Title>
-            <ResponsiveContainer width="100%" height={240}>
-                <LineChart
-                    data={data}
-                    margin={{
-                        top: 16,
-                        right: 16,
-                        bottom: 0,
-                        left: 24,
-                    }}
-                >
-                    <XAxis
-                        dataKey="time"
-                    />
-                    <YAxis
+            <Title>订单走势</Title>
+            {loading ? <Loading /> : (
+                <ResponsiveContainer width="100%" height={240}>
+                    <LineChart
+                        data={list}
+                        margin={{
+                            top: 16,
+                            right: 16,
+                            bottom: 0,
+                            left: 24,
+                        }}
                     >
-                        <Label
-                            angle={270}
-                            position="left"
-                            style={{
-                                textAnchor: 'middle',
-                            }}
+                        <Tooltip />
+                        <XAxis
+                            dataKey="date"
+                        />
+                        <YAxis
                         >
-                            订单数
-                        </Label>
-                    </YAxis>
-                    <Line
-                        isAnimationActive={false}
-                        type="monotone"
-                        dataKey="count"
-                        dot={false}
-                    />
-                </LineChart>
-            </ResponsiveContainer>
+                            <Label
+                                angle={270}
+                                position="left"
+                                style={{
+                                    textAnchor: 'middle',
+                                }}
+                            >
+                                订单数
+                            </Label>
+                        </YAxis>
+                        <Line
+                            isAnimationActive={false}
+                            type="monotone"
+                            dataKey="count"
+                            name="订单数"
+                        />
+                    </LineChart>
+                </ResponsiveContainer>
+            )}
         </Paper>
     );
 }
