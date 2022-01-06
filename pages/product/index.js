@@ -14,15 +14,8 @@ import { useConfirm } from 'material-ui-confirm';
 import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
 import CategorySelect from '../../src/components/CategorySelect';
-
-function filterQuery(query) {
-    for (const key in query) {
-        if (query[key] === '') {
-            delete query[key]
-        }
-    }
-    return query
-}
+import { filterQuery } from '../../src/libs/utils';
+import { APIError } from '../../src/errors';
 
 function FilterBar(props) {
     const {
@@ -171,7 +164,7 @@ function DataTable(props) {
             await apis.product.update(id, { status })
             onRefresh()
         } catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (error instanceof APIError) {
                 return
             }
             throw error
@@ -190,7 +183,7 @@ function DataTable(props) {
             await apis.product.remove(data.id)
             onRefresh()
         } catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (error instanceof APIError) {
                 return
             }
             throw error
@@ -203,7 +196,7 @@ function DataTable(props) {
             onRefresh()
             return true
         } catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (error instanceof APIError) {
                 return false
             }
             throw error
@@ -213,12 +206,12 @@ function DataTable(props) {
     return (
         <Paper {...rest}>
             <TableContainer sx={{ maxHeight: 440 }}>
-                <Table stickyHeader>
+                <Table stickyHeader sx={{ minWidth: 900 }}>
                     <TableHead>
                         <TableRow>
-                            <TableCell width={180}>名称</TableCell>
-                            <TableCell align="center" width={150}>规格</TableCell>
-                            <TableCell align="center" width={100}>价格(元)</TableCell>
+                            <TableCell width={200}>名称</TableCell>
+                            <TableCell width={250}>规格</TableCell>
+                            <TableCell align="center" width={120}>价格(元)</TableCell>
                             <TableCell align="center" width={100}>分类</TableCell>
                             <TableCell align="center" width={100}>库存</TableCell>
                             <TableCell align="center" width={200}>排序</TableCell>
@@ -232,7 +225,7 @@ function DataTable(props) {
                                 <TableCell>
                                     <ProductInfo data={row} />
                                 </TableCell>
-                                <TableCell align="center">
+                                <TableCell>
                                     <ProductSkus data={row} />
                                 </TableCell>
                                 <TableCell align="center">
