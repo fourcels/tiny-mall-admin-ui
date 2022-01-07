@@ -45,7 +45,7 @@ function OrderContent({ data }) {
             <OrderInfo title="订单信息">
                 <Stack gap={4} direction="row">
                     <Stack gap={2}>
-                        <OrderLabel title="下单人">{data.user.username}</OrderLabel>
+                        <OrderLabel title="下单用户">{data.user.username}</OrderLabel>
                         <OrderLabel title="订单号">{data.order_no}</OrderLabel>
                         <OrderLabel title="订单金额"><Typography component="span" color="warning.main">¥{data.amount / 100}</Typography></OrderLabel>
                         {data.remarks && <OrderLabel title="备注">{data.remarks}</OrderLabel>}
