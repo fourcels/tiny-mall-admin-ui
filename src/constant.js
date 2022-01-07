@@ -6,3 +6,9 @@ export const ORDER_STATUS_LABEL = {
     10: '交易完成',
     11: '交易取消',
 }
+
+export const USER_ROLE_LABEL = {
+    1: '超级管理员',
+    2: '管理员',
+    10: '普通用户',
+}

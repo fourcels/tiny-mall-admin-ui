@@ -1,7 +1,6 @@
 import axios from 'axios';
-import qs from 'qs';
 
-export async function authenticate(params) {
-    const { data } = await axios.post('/users/authenticate', qs.stringify(params))
+export async function update(id, params) {
+    const { data } = await axios.patch(`/admin/users/${id}`, params)
     return data
 }

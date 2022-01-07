@@ -66,7 +66,7 @@ function DataTable(props) {
                             <TableCell align="center" width={150}>收货人信息</TableCell>
                             <TableCell align="center" width={100}>下单时间</TableCell>
                             <TableCell align="center" width={100}>订单状态</TableCell>
-                            <TableCell align="center">操作</TableCell>
+                            <TableCell align="center" width={100}>操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -80,7 +80,7 @@ function DataTable(props) {
                                 </TableCell>
                                 <TableCell align="center">{row.amount / 100}</TableCell>
                                 <TableCell align="center"><OrderAddress data={row.address} /></TableCell>
-                                <TableCell align="center">{format(new Date(row.created_at), 'yyyy-MM-dd HH:mm')}</TableCell>
+                                <TableCell align="center">{formatDate(row.created_at)}</TableCell>
                                 <TableCell align="center"><OrderStatus status={row.status} /></TableCell>
                                 <TableCell align="center">
                                     <Button component={Link} href={`/order/${row.order_no}`} variant="text">查看</Button>
@@ -134,8 +134,8 @@ function FilterBar(props) {
         const query = {
             ...router.query,
             ...params,
-            start: formatDate(params.start),
-            end: formatDate(params.end),
+            start: formatDate(params.start, 'yyyy-MM-dd'),
+            end: formatDate(params.end, 'yyyy-MM-dd'),
         }
         router.push({
             pathname: router.pathname,

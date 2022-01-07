@@ -1,37 +1,46 @@
-import { Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material';
+import { Button, Paper, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material';
 import React from 'react';
 import Layout from '../src/layouts/Layout';
 import AddIcon from '@mui/icons-material/Add';
+import { formatDate } from '../src/libs/utils'
+import { useRouter } from 'next/router';
+import useList from '../src/hooks/useList';
+import FieldSwitch from '../src/components/FieldSwitch';
+import { APIError } from '../src/errors';
+import apis from '../src/apis'
+import { USER_ROLE_LABEL } from '../src/constant';
 
-function createData(username, active, role, count, createdAt) {
-    return { username, active, role, count, createdAt };
+function UserRole({ role }) {
+    return (
+        <Typography component="span" color={role < 10 ? 'primary.main' : 'inherit'}>{USER_ROLE_LABEL[role]}</Typography>
+    )
 }
-
-const rows = [
-    createData('admin', true, true, 0, '2021-12-12'),
-    createData('测试用户1', false, false, 2, '2021-12-12'),
-    createData('测试用户2', true, false, 3, '2021-12-12'),
-    createData('测试用户3', true, false, 4, '2021-12-12'),
-    createData('测试用户4', true, false, 0, '2021-12-12'),
-    createData('测试用户5', true, false, 0, '2021-12-12'),
-];
 
 function DataTable(props) {
     const {
-        data,
+        loading,
+        list,
+        total,
+        page,
+        rowsPerPage,
+        handleChangePage,
+        handleChangeRowsPerPage,
+        onRefresh,
         ...rest
     } = props
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
+    const handleChangeActive = async (id, is_active) => {
+        try {
+            await apis.user.update(id, { is_active })
+            onRefresh()
+        } catch (error) {
+            if (error instanceof APIError) {
+                return
+            }
+            throw error
+        }
+    }
 
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
     return (
         <Paper {...rest}>
             <TableContainer sx={{ maxHeight: 440 }}>
@@ -39,51 +48,93 @@ function DataTable(props) {
                     <TableHead>
                         <TableRow>
                             <TableCell>用户名</TableCell>
-                            <TableCell align="center">状态</TableCell>
+                            <TableCell align="center">是否激活</TableCell>
                             <TableCell align="center">用户类型</TableCell>
                             <TableCell align="center">订单数</TableCell>
                             <TableCell align="center">创建时间</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row, index) => (
-                                <TableRow hover key={index}>
-                                    <TableCell>
-                                        {row.username}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        {row.active ? <Typography color="primary">正常</Typography> : <Typography color="error">禁用</Typography>}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        {row.role ? <Typography color="primary">管理员</Typography> : <Typography color="text.secondary">普通用户</Typography>}
-                                    </TableCell>
-                                    <TableCell align="center">{row.count}</TableCell>
-                                    <TableCell align="center">{row.createdAt}</TableCell>
+                        {list.map((row, index) => (
+                            <TableRow hover key={index}>
+                                <TableCell>
+                                    {row.username}
+                                </TableCell>
+                                <TableCell align="center">
+                                    <FieldSwitch onChange={(event) => handleChangeActive(row.id, event.target.checked)} value={row.is_active} />
+                                </TableCell>
+                                <TableCell align="center">
+                                    <UserRole role={row.role} />
+                                </TableCell>
+                                <TableCell align="center">{row.order_count}</TableCell>
+                                <TableCell align="center">{formatDate(row.created_at)}</TableCell>
 
-                                </TableRow>
-                            ))}
+                            </TableRow>
+                        ))}
                     </TableBody>
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
                 component="div"
-                count={data.length}
+                count={total}
                 rowsPerPage={rowsPerPage}
-                page={page}
+                page={page - 1}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
+                showFirstButton
+                showLastButton
             />
         </Paper>
     )
 }
 
 export default function User() {
+    const router = useRouter()
+    const { page = 1, page_size = 10 } = router.query
+
+    const { list, total, mutate, loading } = useList(router.isReady && [
+        '/admin/users/',
+        { page, page_size }
+    ])
+
+
+    const handleChangePage = (event, newPage) => {
+        const page = newPage + 1
+        router.push({
+            pathname: router.pathname,
+            query: {
+                ...router.query,
+                page
+            }
+        }, undefined, { shallow: true })
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        router.push({
+            pathname: router.pathname,
+            query: {
+                ...router.query,
+                page: 1,
+                page_size: +event.target.value
+            }
+        }, undefined, { shallow: true })
+    };
+    const handleRefreh = () => {
+        mutate()
+    }
     return (
         <Layout title="用户管理">
-            <DataTable data={rows} />
+            <DataTable
+                onRefresh={handleRefreh}
+                loading={loading}
+                list={list}
+                total={total}
+                page={+page}
+                rowsPerPage={+page_size}
+                handleChangePage={handleChangePage}
+                handleChangeRowsPerPage={handleChangeRowsPerPage}
+                sx={{ mt: 2 }}
+            />
         </Layout>
     )
 }

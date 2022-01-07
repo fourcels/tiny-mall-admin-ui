@@ -121,7 +121,7 @@ function OrderTable(props) {
                         <TableBody>
                             {list.map((row, index) => (
                                 <TableRow hover key={index}>
-                                    <TableCell>{formatDate(row.created_at, 'yyyy-MM-dd HH:mm')}</TableCell>
+                                    <TableCell>{formatDate(row.created_at)}</TableCell>
                                     <TableCell>
                                         <OrderItems data={row.items} />
                                     </TableCell>

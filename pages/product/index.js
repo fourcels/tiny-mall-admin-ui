@@ -11,11 +11,11 @@ import Image from '../../src/components/Image'
 import apis from '../../src/apis'
 import FieldEditor from '../../src/components/FieldEditor';
 import { useConfirm } from 'material-ui-confirm';
-import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
 import CategorySelect from '../../src/components/CategorySelect';
 import { filterQuery } from '../../src/libs/utils';
 import { APIError } from '../../src/errors';
+import FieldSwitch from '../../src/components/FieldSwitch';
 
 function FilterBar(props) {
     const {
@@ -97,20 +97,6 @@ function FilterBar(props) {
             </Stack>
         </Paper>
     )
-}
-
-function ProductStatus(props) {
-    const {
-        value,
-        onChange,
-    } = props
-    return (
-        <Switch
-            checked={value}
-            onChange={onChange}
-        />
-    )
-
 }
 
 function ProductInfo({ data }) {
@@ -248,7 +234,7 @@ function DataTable(props) {
                                     />
                                 </TableCell>
                                 <TableCell align="center">
-                                    <ProductStatus onChange={(event) => handleChangeStatus(row.id, event.target.checked)} value={row.status} />
+                                    <FieldSwitch onChange={(event) => handleChangeStatus(row.id, event.target.checked)} value={row.status} />
                                 </TableCell>
                                 <TableCell align="center">
                                     <Button component={Link} href={`/product/${row.id}`} variant="text">编辑</Button>

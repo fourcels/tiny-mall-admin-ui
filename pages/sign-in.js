@@ -24,7 +24,7 @@ export default function SignIn() {
 
     const { handleSubmit, control } = useForm();
     const onSubmit = async (params) => {
-        const { access_token } = await apis.user.authenticate(params)
+        const { access_token } = await apis.auth.token(params)
         localStorage.token = access_token
         router.push('/dashboard')
     }

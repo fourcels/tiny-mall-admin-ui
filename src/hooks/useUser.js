@@ -3,7 +3,7 @@ import fetcher from '../fetcher';
 
 
 export default function useUser() {
-    const { data, error, isValidating } = useSWRImmutable("/users/info", fetcher);
+    const { data, error, isValidating } = useSWRImmutable("/auth/user", fetcher);
     const loading = !data && !error;
     return {
         loading: loading || isValidating,

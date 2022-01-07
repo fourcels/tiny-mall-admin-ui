@@ -10,7 +10,7 @@ export function filterQuery(query) {
 }
 
 
-export function formatDate(date, formatStr = 'yyyy-MM-dd') {
+export function formatDate(date, formatStr = 'yyyy-MM-dd HH:mm') {
     if (!date) {
         return ''
     }
