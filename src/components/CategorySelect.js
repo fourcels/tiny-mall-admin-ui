@@ -2,7 +2,7 @@ import { MenuItem, TextField } from '@mui/material'
 import { Controller } from 'react-hook-form'
 import useList from '../hooks/useList'
 
-export default function (props) {
+export default function CategorySelect(props) {
     const {
         name = 'category_id',
         control

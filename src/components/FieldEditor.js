@@ -9,7 +9,7 @@ function TextPreview(props) {
     const {
         value,
         openEdit,
-        ...rest,
+        ...rest
     } = props
     return (
         <Stack display="inline-flex" alignItems="center" gap={1} direction="row" {...rest}>
@@ -28,7 +28,7 @@ function TextEdit(props) {
         onEdit,
         type,
         rules,
-        ...rest,
+        ...rest
     } = props
     const { handleSubmit, control } = useForm({
         defaultValues: {
@@ -42,7 +42,7 @@ function TextEdit(props) {
         }
     }
     return (
-        <Stack display="inline-flex" alignItems="center" direction="row" gap={1}>
+        <Stack display="inline-flex" alignItems="center" direction="row" gap={1} {...rest}>
             <Controller
                 defaultValue=""
                 name="value"
@@ -78,13 +78,13 @@ function TextEdit(props) {
     )
 }
 
-export default function (props) {
+export default function FieldEditor(props) {
     const {
         value,
         onEdit,
         type,
         rules,
-        ...rest,
+        ...rest
     } = props
     const [isEdit, setEdit] = React.useState(false)
 

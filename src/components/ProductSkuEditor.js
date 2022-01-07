@@ -275,7 +275,7 @@ function ProductSkuTable(props) {
             const sku = skus.find((item) => item.name === name)
             return sku || getDefaultSku(name)
         }))
-    }, [dataList, getValues])
+    }, [dataList, getValues, replace])
 
     return (
         <TableContainer sx={{ maxHeight: 440, ...sx }} component={Paper} {...rest}>

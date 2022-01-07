@@ -143,7 +143,7 @@ export default function ImageUpload(props) {
 
     React.useEffect(() => {
         onChange?.(multiple ? images : (images[0] || ''))
-    }, [images])
+    }, [images, onChange, multiple])
 
     const handleChange = async (e) => {
         let files = [...e.target.files]
@@ -165,7 +165,7 @@ export default function ImageUpload(props) {
         } else {
             return images.length === 0
         }
-    })
+    }, [multiple, images, max])
     const handleRemove = (i) => {
         images.splice(i, 1)
         setImages([...images])

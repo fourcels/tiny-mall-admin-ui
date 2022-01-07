@@ -1,6 +1,6 @@
 import React from 'react'
 
-const PriceInput = React.forwardRef(function (props, ref) {
+const PriceInput = React.forwardRef(function PriceInput(props, ref) {
     const { onChange, value, ...rest } = props;
 
     return (

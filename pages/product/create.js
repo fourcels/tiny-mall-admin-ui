@@ -26,6 +26,7 @@ function ProductLabel(props) {
 export default function ProductCreate() {
     const router = useRouter()
     const [isMulti, setIsMulti] = React.useState(false)
+    const { handleSubmit, control, setValue, getValues } = useForm();
 
     React.useEffect(() => {
         if (isMulti) {
@@ -35,8 +36,7 @@ export default function ProductCreate() {
             setValue('attrs', undefined)
             setValue('skus', [getDefaultSku()])
         }
-    }, [isMulti])
-    const { handleSubmit, control, setValue, getValues } = useForm();
+    }, [isMulti, setValue])
     const onSubmit = async (params) => {
         if (params.category_id === '') {
             params.category_id = 0

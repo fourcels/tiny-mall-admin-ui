@@ -25,7 +25,7 @@ function OrderInfo(props) {
     const {
         title,
         children,
-        ...rest,
+        ...rest
     } = props
     return (
         <Paper {...rest}>

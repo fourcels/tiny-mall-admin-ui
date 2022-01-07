@@ -129,7 +129,7 @@ function FilterBar(props) {
             start: start && startOfDay(new Date(start)),
             end: end && startOfDay(new Date(end)),
         })
-    }, [router.query])
+    }, [router.query, reset])
     const onSubmit = async (params) => {
         const query = {
             ...router.query,

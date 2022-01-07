@@ -27,7 +27,7 @@ function FilterBar(props) {
     React.useEffect(() => {
         const { name = '', category_id = '', status = '', sn = '' } = router.query
         reset({ name, category_id, status, sn })
-    }, [router.query])
+    }, [router.query, reset])
     const onSubmit = async (params) => {
         const query = {
             ...router.query,
