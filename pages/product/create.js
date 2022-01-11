@@ -97,7 +97,7 @@ export default function ProductCreate() {
                     </Typography>
                 </ProductLabel>
                 <Controller
-                    defaultValue=""
+                    defaultValue={[]}
                     name="images"
                     control={control}
                     render={({ field }) => (

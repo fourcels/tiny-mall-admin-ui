@@ -128,6 +128,86 @@ function ImageItem(props) {
     )
 }
 
+function ImageUploadSingle(props) {
+    const {
+        width,
+        height,
+        value,
+        onChange,
+        ...rest
+    } = props
+    const [image, setImage] = React.useState(value)
+    const handleChange = async (e) => {
+        let files = [...e.target.files]
+        const { url } = await apis.file.upload(files[0])
+        setImage(url)
+        onChange?.(url)
+    }
+    const handleRemove = () => {
+        setImage('')
+        onChange?.('')
+    }
+    return (
+        <Box display="inline-flex" gap={2} flexWrap="wrap" {...rest}>
+            {image ? (
+                <ImageItem onRemove={handleRemove} width={width} height={height} url={image} />
+            ) : (
+                <UploadButton onChange={handleChange} width={width} height={height} />
+            )}
+        </Box>
+    )
+}
+
+function ImageUploadMulti(props) {
+    const {
+        width,
+        height,
+        max,
+        value,
+        onChange,
+        ...rest
+    } = props
+    const [images, setImages] = React.useState(value)
+    const handleChange = async (e) => {
+        let files = [...e.target.files]
+        if (max > 0 && files.length + images.length > max) {
+            files = files.slice(0, max - images.length)
+        }
+        const urls = await Promise.all(files.map(async (item) => {
+            const { url } = await apis.file.upload(item)
+            return url
+        }));
+        const newImages = [...images, ...urls]
+        setImages(newImages)
+        onChange?.(newImages)
+    }
+    const handleRemove = (i) => {
+        images.splice(i, 1)
+        const newImages = [...images]
+        setImages(newImages)
+        onChange?.(newImages)
+    }
+
+    const showUploadButton = React.useMemo(() => {
+        if (max <= 0) {
+            return true
+        } else {
+            return images.length < max
+        }
+    }, [images, max])
+
+    return (
+        <Box display="inline-flex" gap={2} flexWrap="wrap" {...rest}>
+            {images.map((item, i) => (
+                <ImageItem onRemove={() => handleRemove(i)} key={i} width={width} height={height} url={item} />
+            ))}
+            {showUploadButton && (
+                <UploadButton onChange={handleChange} width={width} height={height} multiple />
+            )}
+        </Box>
+    )
+}
+
 
 export default function ImageUpload(props) {
     const {
@@ -139,44 +219,23 @@ export default function ImageUpload(props) {
         onChange,
         ...rest
     } = props
-    const [images, setImages] = React.useState(value ? (Array.isArray(value) ? value : [value]) : [])
-
-    React.useEffect(() => {
-        onChange?.(multiple ? images : (images[0] || ''))
-    }, [images, onChange, multiple])
-
-    const handleChange = async (e) => {
-        let files = [...e.target.files]
-        if (multiple && max > 0 && files.length + images.length > max) {
-            files = files.slice(0, max - images.length)
-        }
-        files.forEach(async (item) => {
-            const { url } = await apis.file.upload(item)
-            setImages((value) => [...value, url])
-        })
-    }
-    const showUploadButton = React.useMemo(() => {
-        if (multiple) {
-            if (max <= 0) {
-                return true
-            } else {
-                return images.length < max
-            }
-        } else {
-            return images.length === 0
-        }
-    }, [multiple, images, max])
-    const handleRemove = (i) => {
-        images.splice(i, 1)
-        setImages([...images])
-    }
     return (
-        <Box display="inline-flex" gap={2} flexWrap="wrap" {...rest}>
-            {images.map((item, i) => (
-                <ImageItem onRemove={() => handleRemove(i)} key={i} width={width} height={height} url={item} />
-            ))}
-            {showUploadButton && (
-                <UploadButton onChange={handleChange} width={width} height={height} multiple={multiple} />
+        <Box {...rest}>
+            {multiple ? (
+                <ImageUploadMulti
+                    width={width}
+                    height={height}
+                    value={value}
+                    onChange={onChange}
+                    max={max}
+                />
+            ) : (
+                <ImageUploadSingle
+                    width={width}
+                    height={height}
+                    value={value}
+                    onChange={onChange}
+                />
             )}
         </Box>
     )
