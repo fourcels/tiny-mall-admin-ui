@@ -1,6 +1,7 @@
-import { styled } from '@mui/material';
+import getConfig from "next/config";
+const { publicRuntimeConfig } = getConfig();
 
-const STATIC_BASE_URL = process.env.NEXT_PUBLIC_STATIC_BASE_URL
+const STATIC_BASE_URL = publicRuntimeConfig.API_BASE_URL
 
 export default function Image(props) {
     const {

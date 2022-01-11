@@ -2,8 +2,10 @@ import axios from 'axios';
 import Router from 'next/router'
 import { APIError } from './errors';
 import notistack from './notistack';
+import getConfig from "next/config";
+const { publicRuntimeConfig } = getConfig();
 
-axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_BASE_URL
+axios.defaults.baseURL = publicRuntimeConfig.API_BASE_URL
 axios.interceptors.request.use(function (config) {
     if (localStorage && localStorage.token) {
         config.headers.Authorization = `Bearer ${localStorage.token}`
