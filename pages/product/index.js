@@ -101,11 +101,9 @@ function FilterBar(props) {
 
 function ProductInfo({ data }) {
     return (
-        <Stack direction="row">
-            {data.images.length > 0 && <Image sx={{ mr: 1 }} src={data.images[0]} height={64} width={64} />}
-            <Stack justifyContent="center" >
-                <Typography>{data.name}</Typography>
-            </Stack>
+        <Stack direction="row" alignItems="center" gap={1}>
+            {data.images.length > 0 && <Image src={data.images[0]} height={64} width={64} />}
+            <Typography component="span">{data.name}</Typography>
         </Stack>
     )
 }
@@ -191,7 +189,7 @@ function DataTable(props) {
 
     return (
         <Paper {...rest}>
-            <TableContainer sx={{ maxHeight: 440 }}>
+            <TableContainer sx={{ height: 440 }}>
                 <Table stickyHeader sx={{ minWidth: 900 }}>
                     <TableHead>
                         <TableRow>
@@ -201,7 +199,7 @@ function DataTable(props) {
                             <TableCell align="center" width={100}>分类</TableCell>
                             <TableCell align="center" width={100}>库存</TableCell>
                             <TableCell align="center" width={200}>排序</TableCell>
-                            <TableCell align="center">是否在售</TableCell>
+                            <TableCell align="center" width={100}>是否在售</TableCell>
                             <TableCell align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>

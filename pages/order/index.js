@@ -56,7 +56,7 @@ function DataTable(props) {
     } = props
     return (
         <Paper {...rest}>
-            <TableContainer sx={{ maxHeight: 440 }}>
+            <TableContainer sx={{ height: 440 }}>
                 <Table stickyHeader sx={{ minWidth: 800 }}>
                     <TableHead>
                         <TableRow>
