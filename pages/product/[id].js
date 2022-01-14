@@ -4,7 +4,7 @@ import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import apis from '../../src/apis';
 import CategorySelect from '../../src/components/CategorySelect';
-import ImageUpload from '../../src/components/ImageUpload';
+import ImageSelect from '../../src/components/ImageSelect';
 import ProductSkuEditor from '../../src/components/ProductSkuEditor';
 import useInfo from '../../src/hooks/useInfo';
 import PageLayout from '../../src/layouts/PageLayout';
@@ -82,7 +82,7 @@ function ProductContent({ data }) {
             <Box mt={2}>
                 <ProductLabel title="商品图片:">
                     <Typography color="text.secondary">
-                        默认显示第一张图，最多可添加10张（长按拖拽图片，可以调整顺序）
+                        默认显示第一张图，最多可添加5张
                     </Typography>
                 </ProductLabel>
                 <Controller
@@ -90,7 +90,7 @@ function ProductContent({ data }) {
                     name="images"
                     control={control}
                     render={({ field }) => (
-                        <ImageUpload
+                        <ImageSelect
                             mt={2}
                             multiple
                             max={10}

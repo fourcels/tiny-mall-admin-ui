@@ -2,10 +2,9 @@ import { Avatar, Box, Button, Chip, Divider, FormControlLabel, IconButton, Input
 import React from 'react'
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ImageUpload from './ImageUpload';
-import ClearIcon from '@mui/icons-material/Clear';
 import { Controller, useFieldArray, useWatch } from 'react-hook-form';
 import PriceInput from './PriceInput'
+import ImageSelect from './ImageSelect';
 
 
 function ProdouctSku(props) {
@@ -133,7 +132,7 @@ function ProductAttrItem(props) {
                 name={`${name}.image`}
                 control={control}
                 render={({ field }) => (
-                    <ImageUpload value={field.value} width={60} height={60} onChange={field.onChange} />
+                    <ImageSelect value={field.value} width={60} height={60} onChange={field.onChange} />
                 )}
             />
         </Stack>

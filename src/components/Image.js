@@ -5,9 +5,10 @@ export default function Image(props) {
         objectFit,
         src,
         alt = '',
+        style,
         ...rest
     } = props
     return (
-        <img alt={alt} style={{ objectFit }} src={`${STATIC_BASE_URL}/${src}`} {...rest} />
+        <img alt={alt} style={{ verticalAlign: 'middle', objectFit, ...style }} src={`${STATIC_BASE_URL}/${src}`} {...rest} />
     )
 }

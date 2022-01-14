@@ -1,12 +1,12 @@
 import { AppBar, Box, Button, Container, FormControlLabel, IconButton, MenuItem, Paper, Stack, Switch, TextField, Toolbar, Typography } from '@mui/material';
 import PageLayout from '../../src/layouts/PageLayout';
-import ImageUpload from '../../src/components/ImageUpload'
 import React from 'react';
 import ProductSkuEditor, { getDefaultAttr, getDefaultSku } from '../../src/components/ProductSkuEditor'
 import { Controller, useForm } from 'react-hook-form';
 import CategorySelect from '../../src/components/CategorySelect';
 import apis from '../../src/apis';
 import { useRouter } from 'next/router';
+import ImageSelect from '../../src/components/ImageSelect';
 
 
 function ProductLabel(props) {
@@ -93,7 +93,7 @@ export default function ProductCreate() {
             <Box mt={2}>
                 <ProductLabel title="商品图片:">
                     <Typography color="text.secondary">
-                        默认显示第一张图，最多可添加10张（长按拖拽图片，可以调整顺序）
+                        默认显示第一张图，最多可添加5张
                     </Typography>
                 </ProductLabel>
                 <Controller
@@ -101,10 +101,10 @@ export default function ProductCreate() {
                     name="images"
                     control={control}
                     render={({ field }) => (
-                        <ImageUpload
+                        <ImageSelect
                             mt={2}
                             multiple
-                            max={10}
+                            max={5}
                             value={field.value}
                             onChange={field.onChange}
                         />
