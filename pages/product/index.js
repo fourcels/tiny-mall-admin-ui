@@ -200,7 +200,7 @@ function DataTable(props) {
                             <TableCell align="center" width={100}>库存</TableCell>
                             <TableCell align="center" width={200}>排序</TableCell>
                             <TableCell align="center" width={100}>是否在售</TableCell>
-                            <TableCell align="center">操作</TableCell>
+                            <TableCell align="center" width={100}>操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

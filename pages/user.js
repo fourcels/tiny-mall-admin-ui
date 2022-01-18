@@ -9,6 +9,7 @@ import FieldSwitch from '../src/components/FieldSwitch';
 import { APIError } from '../src/errors';
 import apis from '../src/apis'
 import { USER_ROLE_LABEL } from '../src/constant';
+import FieldEditor from '../src/components/FieldEditor';
 
 function UserRole({ role }) {
     return (
@@ -41,6 +42,19 @@ function DataTable(props) {
         }
     }
 
+    const handleBalanceEdit = async (id, value) => {
+        try {
+            await apis.user.update(id, { balance: value })
+            onRefresh()
+            return true
+        } catch (error) {
+            if (error instanceof APIError) {
+                return false
+            }
+            throw error
+        }
+    }
+
     return (
         <Paper {...rest}>
             <TableContainer sx={{ maxHeight: 440 }}>
@@ -51,6 +65,7 @@ function DataTable(props) {
                             <TableCell align="center">是否激活</TableCell>
                             <TableCell align="center">用户类型</TableCell>
                             <TableCell align="center">订单数</TableCell>
+                            <TableCell align="center">余额(元)</TableCell>
                             <TableCell align="center">创建时间</TableCell>
                         </TableRow>
                     </TableHead>
@@ -67,6 +82,16 @@ function DataTable(props) {
                                     <UserRole role={row.role} />
                                 </TableCell>
                                 <TableCell align="center">{row.order_count}</TableCell>
+                                <TableCell align="center">
+                                    <FieldEditor
+                                        onEdit={(value) => handleBalanceEdit(row.id, value * 100)}
+                                        value={row.balance / 100}
+                                        rules={{
+                                            required: '余额不能为空'
+                                        }}
+                                        type='number'
+                                    />
+                                </TableCell>
                                 <TableCell align="center">{formatDate(row.created_at)}</TableCell>
 
                             </TableRow>

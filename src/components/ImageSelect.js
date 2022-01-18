@@ -1,11 +1,7 @@
-import { AppBar, Backdrop, Box, Button, Dialog, IconButton, Slide, Stack, styled, Toolbar, Tooltip, Typography } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close';
-import UploadIcon from '@mui/icons-material/Upload';
+import { AppBar, Backdrop, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, Slide, Stack, styled, TextField, Toolbar, Tooltip, Typography } from '@mui/material'
+
 import React from 'react';
 import Image from './Image';
-import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
-import DeleteIcon from '@mui/icons-material/Delete';
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 import useInfinite from '../hooks/useInfinite';
 import apis from '../apis'
@@ -13,6 +9,15 @@ import { APIError } from '../errors'
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import Loading from './Loading'
 import { useConfirm } from 'material-ui-confirm';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import StarIcon from '@mui/icons-material/Star';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
+import UploadIcon from '@mui/icons-material/Upload';
+import { Controller, useForm } from 'react-hook-form';
 
 const Input = styled('input')({
     display: 'none',
@@ -21,12 +26,11 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-function ImageItem(props) {
+
+function EditButton(props) {
     const {
         data,
-        selected,
-        onToggle,
-        onRemove,
+        onRefresh,
         ...rest
     } = props
     const [open, setOpen] = React.useState(false);
@@ -36,25 +40,110 @@ function ImageItem(props) {
     const handleOpen = () => {
         setOpen(true);
     };
+    const { handleSubmit, control } = useForm({
+        defaultValues: {
+            name: data.name,
+        }
+    });
+    const onSubmit = async (params) => {
+        try {
+            await apis.image.update(data.id, params)
+            setOpen(false)
+            onRefresh()
+        } catch (error) {
+            if (error instanceof APIError) {
+                return
+            }
+            throw error
+        }
+    }
     return (
-        <Box width={200} {...rest}>
-            <Box onClick={onToggle} position="relative">
-                <Box sx={{ cursor: 'pointer' }}>
-                    <Image objectFit="cover" width={200} height={200} src={data.url} />
-                </Box>
-                {selected && <CheckOutlinedIcon sx={{ position: 'absolute', right: 10, bottom: 10, bgcolor: 'primary.main', color: '#fff', borderRadius: '50%' }} />}
-            </Box>
-            <Stack mt={1} alignItems="center" direction="row">
-                <Typography flexGrow={1} noWrap>{data.name}</Typography>
-                <Box sx={{ whiteSpace: 'nowrap' }} textAlign="center">
-                    <Tooltip title="预览">
-                        <IconButton onClick={handleOpen} size="small"><ZoomInIcon /></IconButton>
-                    </Tooltip>
-                    <Tooltip title="删除">
-                        <IconButton onClick={onRemove} size="small"><DeleteIcon /></IconButton>
-                    </Tooltip>
-                </Box>
+        <React.Fragment>
+            <IconButton onClick={handleOpen} {...rest}><EditIcon /></IconButton>
+            <Dialog
+                open={open}
+            >
+                <DialogTitle>编辑图片</DialogTitle>
+                <DialogContent>
+                    <Stack>
+
+                        <Controller
+                            defaultValue=""
+                            name="name"
+                            control={control}
+                            rules={{ required: '图片名称不能为空' }}
+                            render={({ field, fieldState }) => (
+                                <TextField
+                                    label="名称"
+                                    margin="normal"
+                                    required
+                                    autoFocus
+                                    {...field}
+                                    error={!!fieldState.error}
+                                    helperText={fieldState.error?.message}
+                                />
+                            )}
+                        />
+                    </Stack>
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="error">取消</Button>
+                    <Button onClick={handleSubmit(onSubmit)}>
+                        确定
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </React.Fragment>
+    )
+}
+
+function ImageItem(props) {
+    const {
+        data,
+        width,
+        height,
+        selected,
+        onToggle,
+        onFavorite,
+        onRemove,
+        onRefresh,
+        ...rest
+    } = props
+    const [open, setOpen] = React.useState(false);
+    const handleClose = () => {
+        setOpen(false);
+    };
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    return (
+        <ImageListItem
+            sx={{
+                width,
+                m: 'auto',
+                '&:hover .action': {
+                    display: 'flex'
+                }
+            }}
+            {...rest}>
+            <Image onClick={onToggle} objectFit="cover" width={width} height={height} src={data.url} />
+            {selected && <CheckOutlinedIcon sx={{ position: 'absolute', right: 10, top: 10, bgcolor: 'primary.main', color: '#fff', borderRadius: '50%' }} />}
+            <Stack className='action' sx={{ position: 'absolute', top: 0, left: 0, backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#fff', display: 'none' }}>
+                <IconButton color="inherit" onClick={handleOpen} size="small"><ZoomInIcon /></IconButton>
+                <IconButton color="inherit" onClick={onRemove} size="small"><DeleteIcon /></IconButton>
+                <EditButton onRefresh={onRefresh} data={data} color="inherit" size="small" />
             </Stack>
+            <ImageListItemBar
+                sx={{ color: '#fff' }}
+                title={data.name}
+                actionIcon={
+                    <IconButton color='inherit' onClick={onFavorite}>
+                        {data.is_favorite ? <StarIcon color='warning' /> : <StarBorderIcon />}
+                    </IconButton>
+                }
+            />
             <Backdrop
                 unmountOnExit
                 sx={{
@@ -70,17 +159,19 @@ function ImageItem(props) {
                     <Typography mt={1} color="#fff">{data.name} {`${data.width}x${data.height}`} {Math.round(data.size / 1000)}KB</Typography>
                 </Stack>
             </Backdrop>
-        </Box>
+        </ImageListItem>
     )
 }
 
-
-function ImageList(props) {
+const IMAGE_WIDTH = 180
+const IMAGE_HEIGH = 180
+function StandardImageList(props) {
     const {
         data,
         selectedItems,
         onItemToggle,
         onItemRemove,
+        onRefresh,
         ...rest
     } = props
 
@@ -88,15 +179,39 @@ function ImageList(props) {
         const obj = selectedItems.reduce((a, b) => ({ ...a, [b.id]: b }), {})
         return obj
     }, [selectedItems])
+
+    const handleItemFavorite = async (data) => {
+        try {
+            await apis.image.update(data.id, { is_favorite: !data.is_favorite })
+            onRefresh()
+        } catch (error) {
+            if (error instanceof APIError) { return }
+            throw error
+        }
+    }
+
+    const [column, setColumn] = React.useState(6)
+
+    const imageListRef = React.useRef(null)
+
+    const updateDimensions = () => {
+        setColumn(parseInt(imageListRef.current.clientWidth / (IMAGE_WIDTH + 4)))
+    }
+
+    React.useEffect(() => {
+        updateDimensions()
+        window.addEventListener("resize", updateDimensions);
+        return () => window.removeEventListener("resize", updateDimensions);
+    }, []);
     return (
-        <Stack flexWrap="wrap" direction="row" gap={2} {...rest}>
+        <ImageList sx={{ overflow: 'hidden' }} ref={imageListRef} cols={column} {...rest}>
             {data.map((item) => (
-                <ImageItem onRemove={() => onItemRemove(item)} selected={!!selectedObject[item.id]} onToggle={() => onItemToggle(item)} key={item.id} data={item} />
+                <ImageItem onRefresh={onRefresh} selected={!!selectedObject[item.id]} width={IMAGE_WIDTH} height={IMAGE_HEIGH} data={item} key={item.id} onToggle={() => onItemToggle(item)} onRemove={() => onItemRemove(item)} onFavorite={() => handleItemFavorite(item)} />
             ))}
-        </Stack>
+        </ImageList>
     )
 }
-const PAGE_SIZE = 20
+const PAGE_SIZE = 25
 function ImageSelectButton(props) {
     const {
         height,
@@ -125,7 +240,7 @@ function ImageSelectButton(props) {
         return `/admin/images/?page=${pageIndex + 1}&page_size=${PAGE_SIZE}`
     }, PAGE_SIZE)
 
-    const [sentryRef] = useInfiniteScroll({
+    const [sentryRef, { rootRef }] = useInfiniteScroll({
         loading,
         hasNextPage,
         onLoadMore: () => setSize(size + 1),
@@ -166,13 +281,17 @@ function ImageSelectButton(props) {
         onChange?.(multiple ? value : value[0])
         handleClose()
     }
+    const handleRefresh = () => {
+        mutate()
+    }
+
     const handleFileChange = async (e) => {
         const files = [...e.target.files]
         try {
             await Promise.all(files.map((item) => (
                 apis.image.create(item)
             )))
-            mutate()
+            handleRefresh()
         } catch (error) {
             if (error instanceof APIError) { return }
             throw error
@@ -188,7 +307,7 @@ function ImageSelectButton(props) {
         try {
             await apis.image.remove(data.id)
             setSelectedItems(selectedItems.filter((item) => item.id !== data.id))
-            mutate()
+            handleRefresh()
         } catch (error) {
             if (error instanceof APIError) {
                 return
@@ -252,13 +371,15 @@ function ImageSelectButton(props) {
                         </Button>
                     </Toolbar>
                 </AppBar>
-                <Box flexGrow={1} sx={{ overflowY: 'auto' }}>
-                    <ImageList onItemRemove={handleItemRemove} selectedItems={selectedItems} onItemToggle={handleItemToggle} m={2} data={list} />
-                    {(loading || hasNextPage) && (
-                        <Box ref={sentryRef}>
-                            <Loading />
-                        </Box>
-                    )}
+                <Box ref={rootRef} sx={{ flexGrow: 1, overflowY: 'auto' }}>
+                    <Container>
+                        <StandardImageList onRefresh={handleRefresh} onItemRemove={handleItemRemove} selectedItems={selectedItems} onItemToggle={handleItemToggle} m={2} data={list} />
+                        {(loading || hasNextPage) && (
+                            <Box ref={sentryRef}>
+                                <Loading />
+                            </Box>
+                        )}
+                    </Container>
                 </Box>
             </Dialog>
         </React.Fragment>

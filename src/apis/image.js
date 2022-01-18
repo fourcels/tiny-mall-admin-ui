@@ -7,6 +7,10 @@ export async function create(file) {
     return data
 }
 
+export async function update(id, params) {
+    const { data } = await axios.patch(`/admin/images/${id}`, params)
+    return data
+}
 export async function remove(id) {
     const { data } = await axios.delete(`/admin/images/${id}`)
     return data
