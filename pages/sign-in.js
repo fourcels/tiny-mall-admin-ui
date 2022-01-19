@@ -9,11 +9,9 @@ import Head from 'next/head';
 import Copyright from '../src/components/Copyright';
 import apis from '../src/apis'
 import { useForm, Controller } from "react-hook-form";
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { IconButton, InputAdornment } from '@mui/material';
 import React from 'react';
 import { useRouter } from 'next/dist/client/router';
+import PasswordField from '../src/components/PasswordField';
 
 
 export default function SignIn() {
@@ -73,25 +71,11 @@ export default function SignIn() {
                         control={control}
                         rules={{ required: '密码不能为空' }}
                         render={({ field, fieldState }) => (
-                            <TextField
+                            <PasswordField
                                 label="密码"
                                 margin="normal"
                                 required
                                 fullWidth
-                                autoFocus
-                                type={showPassword ? 'text' : 'password'}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={toggleShowPassword}
-                                                edge="end"
-                                            >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    )
-                                }}
                                 {...field}
                                 error={!!fieldState.error}
                                 helperText={fieldState.error?.message}

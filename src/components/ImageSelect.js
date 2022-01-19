@@ -18,6 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import UploadIcon from '@mui/icons-material/Upload';
 import { Controller, useForm } from 'react-hook-form';
+import useUser from '../hooks/useUser';
 
 const Input = styled('input')({
     display: 'none',
@@ -222,6 +223,8 @@ function ImageSelectButton(props) {
     const [open, setOpen] = React.useState(false);
     const [selectedItems, setSelectedItems] = React.useState([])
     const confirm = useConfirm()
+
+    const { user } = useUser()
     const {
         loading,
         hasNextPage,
@@ -358,14 +361,14 @@ function ImageSelectButton(props) {
                         <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                             添加图片
                         </Typography>
-                        <Tooltip title="上传图片">
+                        {user?.role === 1 && <Tooltip title="上传图片">
                             <label>
                                 <Input multiple onChange={handleFileChange} accept="image/*" type="file" />
                                 <IconButton component="span" color="inherit">
                                     <UploadIcon />
                                 </IconButton>
                             </label>
-                        </Tooltip>
+                        </Tooltip>}
                         <Button disabled={selectedItems.length === 0} onClick={handleOK} color="inherit">
                             确定
                         </Button>

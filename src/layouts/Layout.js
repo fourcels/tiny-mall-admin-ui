@@ -75,9 +75,11 @@ function ProfileMenu() {
 
     return (
         <React.Fragment>
-            <IconButton onClick={handleMenu}>
-                <Avatar >{user?.username[0].toUpperCase()}</Avatar>
-            </IconButton>
+            <Tooltip title={user?.username}>
+                <IconButton onClick={handleMenu}>
+                    <Avatar />
+                </IconButton>
+            </Tooltip>
             <Menu
                 anchorEl={anchorEl}
                 anchorOrigin={{

@@ -1,4 +1,4 @@
-import { Button, Paper, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Paper, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from '@mui/material';
 import React from 'react';
 import Layout from '../src/layouts/Layout';
 import AddIcon from '@mui/icons-material/Add';
@@ -10,6 +10,9 @@ import { APIError } from '../src/errors';
 import apis from '../src/apis'
 import { USER_ROLE_LABEL } from '../src/constant';
 import FieldEditor from '../src/components/FieldEditor';
+import { Controller, useForm } from 'react-hook-form';
+import PasswordField from '../src/components/PasswordField';
+import useUser from '../src/hooks/useUser';
 
 function UserRole({ role }) {
     return (
@@ -113,8 +116,108 @@ function DataTable(props) {
     )
 }
 
+function CreateButton({ onRefresh }) {
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const { handleSubmit, control, reset } = useForm({
+        defaultValues: {
+            username: '',
+            password: '',
+            role: 10,
+        }
+    });
+    const onSubmit = async (params) => {
+        try {
+            await apis.user.create(params)
+            setOpen(false)
+            reset()
+            onRefresh()
+        } catch (error) {
+            if (error instanceof APIError) {
+                return
+            }
+            throw error
+        }
+    }
+    return (
+        <React.Fragment>
+            <Button onClick={handleOpen} startIcon={<AddIcon />} variant="contained">添加新分类</Button>
+            <Dialog
+                open={open}
+            >
+                <DialogTitle>添加新用户</DialogTitle>
+                <DialogContent>
+                    <Stack>
+
+                        <Controller
+                            defaultValue=""
+                            name="username"
+                            control={control}
+                            rules={{ required: '用户名不能为空' }}
+                            render={({ field, fieldState }) => (
+                                <TextField
+                                    label="用户名"
+                                    margin="normal"
+                                    required
+                                    autoFocus
+                                    {...field}
+                                    error={!!fieldState.error}
+                                    helperText={fieldState.error?.message}
+                                />
+                            )}
+                        />
+                        <Controller
+                            defaultValue=""
+                            name="password"
+                            control={control}
+                            rules={{ required: '密码不能为空' }}
+                            render={({ field, fieldState }) => (
+                                <PasswordField
+                                    label="密码"
+                                    margin="normal"
+                                    required
+                                    {...field}
+                                    error={!!fieldState.error}
+                                    helperText={fieldState.error?.message}
+                                />
+                            )}
+                        />
+                        <Controller
+                            defaultValue={10}
+                            name="role"
+                            control={control}
+                            render={({ field, fieldState }) => (
+                                <TextField
+                                    label="用户类型"
+                                    margin="normal"
+                                    required
+                                    autoFocus
+                                    select
+                                    {...field}
+                                >
+                                    <MenuItem value={2}>管理员</MenuItem>
+                                    <MenuItem value={10}>普通用户</MenuItem>
+                                </TextField>
+                            )}
+                        />
+                    </Stack>
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="error">取消</Button>
+                    <Button onClick={handleSubmit(onSubmit)}>
+                        确定
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </React.Fragment>
+    )
+}
+
 export default function User() {
     const router = useRouter()
+    const { user } = useUser()
     const { page = 1, page_size = 10 } = router.query
 
     const { list, total, mutate, loading } = useList(router.isReady && [
@@ -149,6 +252,9 @@ export default function User() {
     }
     return (
         <Layout title="用户管理">
+            {user?.role === 1 && <Stack direction="row" justifyContent="right">
+                <CreateButton onRefresh={handleRefreh} />
+            </Stack>}
             <DataTable
                 onRefresh={handleRefreh}
                 loading={loading}
