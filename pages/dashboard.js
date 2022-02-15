@@ -110,9 +110,9 @@ function OrderTable(props) {
                     <Table stickyHeader sx={{ minWidth: 800 }}>
                         <TableHead>
                             <TableRow>
-                                <TableCell>下单时间</TableCell>
-                                <TableCell>商品信息</TableCell>
-                                <TableCell align="center">收货人信息</TableCell>
+                                <TableCell width={200}>下单时间</TableCell>
+                                <TableCell width={200}>商品信息</TableCell>
+                                <TableCell width={200} align="center">收货人信息</TableCell>
                                 <TableCell align="center">金额(元)</TableCell>
                                 <TableCell align="center">状态</TableCell>
                                 <TableCell align="center">操作</TableCell>

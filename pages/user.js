@@ -142,7 +142,7 @@ function CreateButton({ onRefresh }) {
     }
     return (
         <React.Fragment>
-            <Button onClick={handleOpen} startIcon={<AddIcon />} variant="contained">添加新分类</Button>
+            <Button onClick={handleOpen} startIcon={<AddIcon />} variant="contained">添加新用户</Button>
             <Dialog
                 open={open}
             >

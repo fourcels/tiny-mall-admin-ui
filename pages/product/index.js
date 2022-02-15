@@ -113,8 +113,8 @@ function ProductSkus({ data }) {
         data.attrs ? (
             <Stack display="inline-flex">
                 {data.attrs.map((item, i) => (
-                    <Stack key={i} direction="row" gap={1}>
-                        <Typography fontWeight={500} noWrap>{item.name}:</Typography>
+                    <Stack key={i} direction="row" alignItems="center" gap={1}>
+                        <Typography fontWeight={500}>{item.name}:</Typography>
                         <Typography>{item.items.map((item) => item.value).join(', ')}</Typography>
                     </Stack>
                 ))}
