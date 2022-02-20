@@ -10,7 +10,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import React, { useEffect } from 'react';
 import { mainListItems } from '../listItems';
 import Image from 'next/image'
-import { Avatar, Button, Menu, MenuItem, Tooltip, useMediaQuery } from '@mui/material';
+import { Avatar, Button, Menu, MenuItem, Stack, Tooltip, useMediaQuery } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import useUser from '../hooks/useUser';
 import { useRouter } from 'next/router';
@@ -75,11 +75,12 @@ function ProfileMenu() {
 
     return (
         <React.Fragment>
-            <Tooltip title={user?.username}>
+            <Stack direction="row" gap={1} alignItems="center">
+                <Typography>{user?.username}</Typography>
                 <IconButton onClick={handleMenu}>
                     <Avatar />
                 </IconButton>
-            </Tooltip>
+            </Stack>
             <Menu
                 anchorEl={anchorEl}
                 anchorOrigin={{
