@@ -1,4 +1,4 @@
-import { Button, Card, Chip, MenuItem, Paper, Select, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from '@mui/material';
+import { Box, Button, Card, Chip, MenuItem, Paper, Select, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from '@mui/material';
 import React from 'react';
 import Layout from '../../src/layouts/Layout';
 import AddIcon from '@mui/icons-material/Add';
@@ -102,7 +102,9 @@ function FilterBar(props) {
 function ProductInfo({ data }) {
     return (
         <Stack direction="row" alignItems="center" gap={1}>
-            {data.images.length > 0 && <Image src={data.images[0]} height={64} width={64} />}
+            <Box>
+                {data.images.length > 0 && <Image src={data.images[0]} height={64} width={64} />}
+            </Box>
             <Typography component="span">{data.name}</Typography>
         </Stack>
     )

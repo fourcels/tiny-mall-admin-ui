@@ -76,7 +76,7 @@ function ProfileMenu() {
     return (
         <React.Fragment>
             <Stack direction="row" gap={1} alignItems="center">
-                <Typography>{user?.username}</Typography>
+                <Typography component="span">{user?.username}</Typography>
                 <IconButton onClick={handleMenu}>
                     <Avatar />
                 </IconButton>
